@@ -112,7 +112,7 @@ function App() {
           onLike={() => toggleLike(selected.id)}
           onShare={() => shareAnime(selected)}
           onReport={() => reportAnime(selected.id)}
-          onCopy={copyLink}
+          onCopy={() => copyLink(selected)}
           onOpen={openAnime}
         />
       </Shell>
