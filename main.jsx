@@ -272,7 +272,28 @@ function DetailPage({ anime, liked, reported, adStep, showAds, setShowAds, setAd
               {[1,2].map(n => <div key={n} className={adStep >= n ? "step done" : "step"}>{adStep >= n ? <CheckCircle2 size={15}/> : n}</div>)}
             </div>
             <div className="stepText">{adStep}/2 Completed</div>
-            <button className="watchAd" onClick={() => setAdStep(s => Math.min(2, s + 1))}>
+            <button className="watchAd" onClick={async () => {
+  try {
+    if (!window.Adsgram) {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = "https://sad.adsgram.ai/js/sad.min.js";
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
+    const AdController = window.Adsgram.init({ blockId: "46655" });
+    const result = await AdController.show();
+
+    if (result?.done) {
+      setAdStep(s => Math.min(2, s + 1));
+    }
+  } catch (error) {
+    console.log("AdsGram error:", error);
+  }
+}}>
               {adStep >= 2 ? "Unlocked ✓" : `▶ Watch Ad`}
             </button>
             <small>After completing 4 ads, you will get the link to watch this episode.</small>
