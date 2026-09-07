@@ -68,7 +68,20 @@ function App() {
 
   const toggleLike = (id) => setLiked(v => ({ ...v, [id]: !v[id] }));
 
-  const shareAnime = async (anime) => {
+  const shareAnime = (anime) => {
+  const appUrl = "https://t.me/AniFanIndiabot/AniFanIndia";
+  const text = `${anime.title} • ${anime.episode} — Ani-Fan India`;
+
+  const shareUrl =
+    `https://t.me/share/url?url=${encodeURIComponent(appUrl)}` +
+    `&text=${encodeURIComponent(text)}`;
+
+  if (window.Telegram?.WebApp?.openTelegramLink) {
+    window.Telegram.WebApp.openTelegramLink(shareUrl);
+  } else {
+    window.location.href = shareUrl;
+  }
+};
     const text = `${anime.title} • ${anime.episode} — Ani-Fan India`;
     if (navigator.share) {
       try { await navigator.share({ title: anime.title, text }); } catch {}
