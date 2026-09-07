@@ -284,7 +284,7 @@ function DetailPage({ anime, liked, reported, adStep, showAds, setShowAds, setAd
       });
     }
 
-    const AdController = window.Adsgram.init({ blockId: "46655" });
+    const AdController = window.Adsgram.init({ blockId: "46662" });
     const result = await AdController.show();
 
     if (result?.done) {
