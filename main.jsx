@@ -132,13 +132,13 @@ function App() {
     </Shell>
   );
 }
-<img src="/anifanlogo.png" alt="" className="brandLogo" />
+
 function Shell({ children, tab, setTab }) {
   return (
     <div className="app">
       <header className="telegramBar">
         <div className="telegramBrand">
-          <img src="/logo.png" alt="" className="brandLogo" />
+          <img src="/anifanlogo.png" alt="" className="brandLogo" />
           <span>Ani-Fan India</span>
         </div>
         <div className="topActions">
