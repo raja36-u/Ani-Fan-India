@@ -83,13 +83,7 @@ function App() {
   }
 };
     const text = `${anime.title} • ${anime.episode} — Ani-Fan India`;
-    if (navigator.share) {
-      try { await navigator.share({ title: anime.title, text }); } catch {}
-    } else if (navigator.clipboard) {
-      await navigator.clipboard.writeText(text);
-      alert("Share text copied.");
-    }
-  };
+    
 
   const copyLink = async () => {
     try { await navigator.clipboard.writeText(location.href); alert("Link copied."); } catch {}
