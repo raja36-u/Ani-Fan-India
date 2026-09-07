@@ -138,7 +138,7 @@ function Shell({ children, tab, setTab }) {
     <div className="app">
       <header className="telegramBar">
         <div className="telegramBrand">
-          <img src="/anifanlogo.png" alt="" className="brandLogo" />
+          <img src="/anifanlogo.png" alt="Ani-Fan India" className="brandLogo" />
           <span>Ani-Fan India</span>
         </div>
         <div className="topActions">
