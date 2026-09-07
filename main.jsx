@@ -51,6 +51,23 @@ function App() {
     }
   }, []);
 
+ useEffect(() => {
+  const startParam =
+    window.Telegram?.WebApp?.initDataUnsafe?.start_param;
+
+  if (startParam?.startsWith("episode_")) {
+    const animeId = startParam.replace("episode_", "");
+    const anime = ANIME.find(
+      item => String(item.id) === animeId
+    );
+
+    if (anime) {
+      setSelected(anime);
+      setAdStep(0);
+    }
+  }
+}, []);
+  
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return ANIME.filter(a =>
