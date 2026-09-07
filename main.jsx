@@ -81,9 +81,7 @@ function App() {
   } else {
     window.location.href = shareUrl;
   }
-};
-    const text = `${anime.title} • ${anime.episode} — Ani-Fan India`;
-    
+};   
 
   const copyLink = async () => {
     try { await navigator.clipboard.writeText(location.href); alert("Link copied."); } catch {}
