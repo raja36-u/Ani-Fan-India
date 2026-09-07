@@ -83,9 +83,15 @@ function App() {
   }
 };   
 
-  const copyLink = async () => {
-    try { await navigator.clipboard.writeText(location.href); alert("Link copied."); } catch {}
-  };
+  const copyLink = async (anime) => {
+  const episodeLink =
+    `https://t.me/AniFanIndiabot/AniFanIndia?startapp=episode_${anime.id}`;
+
+  try {
+    await navigator.clipboard.writeText(episodeLink);
+    alert("Episode link copied.");
+  } catch {}
+};
 
   const reportAnime = (id) => {
     setReported(v => ({ ...v, [id]: true }));
