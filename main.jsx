@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   Search, Pin, Heart, Share2, Flag, Clipboard, ChevronLeft, ChevronRight,
