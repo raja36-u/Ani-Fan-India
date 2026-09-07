@@ -296,7 +296,7 @@ function DetailPage({ anime, liked, reported, adStep, showAds, setShowAds, setAd
 }}>
               {adStep >= 2 ? "Unlocked ✓" : `▶ Watch Ad`}
             </button>
-            <small>After completing 4 ads, you will get the link to watch this episode.</small>
+            <small>After completing 2 ads, you will get the link to watch this episode.</small>
             {adStep >= 2 && <button className="episodeOpen" onClick={() => alert("Connect this button to your Telegram channel / episode URL.")}>Open Episode Link</button>}
           </div>
         </div>
