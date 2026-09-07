@@ -132,7 +132,7 @@ function App() {
     </Shell>
   );
 }
-
+<img src="/anifanlogo.png" alt="" className="brandLogo" />
 function Shell({ children, tab, setTab }) {
   return (
     <div className="app">
