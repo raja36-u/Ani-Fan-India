@@ -245,7 +245,7 @@ function DetailPage({ anime, liked, reported, adStep, showAds, setShowAds, setAd
           <button className="copyLink" onClick={onCopy}><Clipboard size={16}/> Copy Link</button>
 
           <button className="watchUnlock" onClick={() => setShowAds(true)}>
-            <Play size={17} fill="currentColor"/> Watch Ads ({adStep}/4)
+            <Play size={17} fill="currentColor"/> Watch Ads ({adStep}/2)
           </button>
         </div>
       </article>
@@ -267,16 +267,16 @@ function DetailPage({ anime, liked, reported, adStep, showAds, setShowAds, setAd
             <button className="modalClose" onClick={() => setShowAds(false)}><X size={18}/></button>
             <div className="giftCircle"><Gift size={31}/></div>
             <h2>Watch Ads to Unlock</h2>
-            <p>Complete <b>4 Ads</b> to get<br/><span>Episode Link & Channel Access</span></p>
+            <p>Complete <b>2 Ads</b> to get<br/><span>Episode Link & Channel Access</span></p>
             <div className="steps">
-              {[1,2,3,4].map(n => <div key={n} className={adStep >= n ? "step done" : "step"}>{adStep >= n ? <CheckCircle2 size={15}/> : n}</div>)}
+              {[1,2].map(n => <div key={n} className={adStep >= n ? "step done" : "step"}>{adStep >= n ? <CheckCircle2 size={15}/> : n}</div>)}
             </div>
-            <div className="stepText">{adStep}/4 Completed</div>
-            <button className="watchAd" onClick={() => setAdStep(s => Math.min(4, s + 1))}>
-              {adStep >= 4 ? "Unlocked ✓" : `▶ Watch Ad`}
+            <div className="stepText">{adStep}/2 Completed</div>
+            <button className="watchAd" onClick={() => setAdStep(s => Math.min(2, s + 1))}>
+              {adStep >= 2 ? "Unlocked ✓" : `▶ Watch Ad`}
             </button>
             <small>After completing 4 ads, you will get the link to watch this episode.</small>
-            {adStep >= 4 && <button className="episodeOpen" onClick={() => alert("Connect this button to your Telegram channel / episode URL.")}>Open Episode Link</button>}
+            {adStep >= 2 && <button className="episodeOpen" onClick={() => alert("Connect this button to your Telegram channel / episode URL.")}>Open Episode Link</button>}
           </div>
         </div>
       )}
