@@ -45,6 +45,27 @@ function App() {
   const [reported, setReported] = useState({});
   const [adStep, setAdStep] = useState(0);
   const [showAds, setShowAds] = useState(false);
+  const [animeList, setAnimeList] = useState(ANIME);
+
+useEffect(() => {
+  async function loadAnime() {
+    const { data, error } = await supabase
+      .from("anime")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      const formatted = data.map((item) => ({
+        ...item,
+        image: item.image_url,
+      }));
+
+      setAnimeList(formatted);
+    }
+  }
+
+  loadAnime();
+}, []);
 
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
@@ -74,7 +95,7 @@ function App() {
   
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return ANIME.filter(a =>
+    return animeList.filter(a =>
       (category === "All" || a.category === category) &&
       (!q || `${a.title} ${a.episode}`.toLowerCase().includes(q))
     );
