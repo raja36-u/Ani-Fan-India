@@ -82,9 +82,9 @@ useEffect(() => {
 
   if (startParam?.startsWith("episode_")) {
     const animeId = startParam.replace("episode_", "");
-    const anime = ANIME.find(
-      item => String(item.id) === animeId
-    );
+    const anime = animeList.find(
+  item => String(item.id) === animeId
+);
 
     if (anime) {
       setSelected(anime);
