@@ -372,7 +372,12 @@ function Profile({ liked, onOpen }) {
   return (
     <>
       <section className="profileHead">
-        <div className="avatar"><img src="/logo.png" alt="Ani-Fan India"/></div>
+        <div className="avatar">
+  <img
+    src={tgUser?.photo_url || "/anifanlogo.png"}
+    alt="Ani-Fan India"
+  />
+</div>
         <div><h1>{displayName} 👑</h1><p>{username}</p><span className="lover"><Crown size={12}/> Anime Lover</span></div>
       </section>
 
