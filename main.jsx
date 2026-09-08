@@ -41,7 +41,14 @@ function App() {
   const [adStep, setAdStep] = useState(0);
   const [showAds, setShowAds] = useState(false);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const tg = window.Telegram?.WebApp;
+
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+  }, []);
 
  useEffect(() => {
   const startParam =
