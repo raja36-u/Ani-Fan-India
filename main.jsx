@@ -144,6 +144,7 @@ function App() {
       <Shell tab={tab} setTab={setTab}>
         <DetailPage
           anime={selected}
+          animeList={animeList}
           liked={!!liked[selected.id]}
           reported={!!reported[selected.id]}
           adStep={adStep}
