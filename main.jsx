@@ -7,6 +7,21 @@ import {
 } from "lucide-react";
 import "./styles.css";
 
+window.addEventListener("error", (e) => {
+  document.body.innerHTML =
+    `<pre style="color:red;padding:20px;white-space:pre-wrap">
+ERROR: ${e.message}
+${e.error?.stack || ""}
+</pre>`;
+});
+
+window.addEventListener("unhandledrejection", (e) => {
+  document.body.innerHTML =
+    `<pre style="color:red;padding:20px;white-space:pre-wrap">
+PROMISE ERROR: ${e.reason}
+</pre>`;
+});
+
 const ANIME = [
   { id: 1, title: "Solo Leveling", episode: "Episode 12", views: "12.8K", likes: 1200, date: "12/04/2026", pinned: true, category: "Top Rated",
     image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=85" },
