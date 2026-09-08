@@ -358,12 +358,22 @@ function AnimeSearchPage({ query, setQuery, onOpen }) {
 }
 
 function Profile({ liked, onOpen }) {
+    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+
+  const displayName =
+    [tgUser?.first_name, tgUser?.last_name]
+      .filter(Boolean)
+      .join(" ") || "Ani-Fan India";
+
+  const username = tgUser?.username
+    ? `@${tgUser.username}`
+    : "Telegram User";
   const likedAnime = ANIME.filter(a => liked[a.id]);
   return (
     <>
       <section className="profileHead">
         <div className="avatar"><img src="/logo.png" alt="Ani-Fan India"/></div>
-        <div><h1>Ani-Fan India 👑</h1><p>@anifan_india</p><span className="lover"><Crown size={12}/> Anime Lover</span></div>
+        <div><h1>{displayName} 👑</h1><p>{username}</p><span className="lover"><Crown size={12}/> Anime Lover</span></div>
       </section>
 
       <div className="stats">
