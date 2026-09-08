@@ -275,7 +275,7 @@ function AnimeCard({ anime, featured, liked, reported, onOpen, onLike, onShare, 
   );
 }
 
-function DetailPage({ anime, liked, reported, adStep, showAds, setShowAds, setAdStep, onBack, onLike, onShare, onReport, onCopy, onOpen }) {
+function DetailPage({ anime, animeList, liked, reported, adStep, showAds, setShowAds, setAdStep, onBack, onLike, onShare, onReport, onCopy, onOpen }) {
   return (
     <>
       <button className="backLink" onClick={onBack}><ChevronLeft size={17}/> Back to Anime</button>
