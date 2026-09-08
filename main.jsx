@@ -417,13 +417,7 @@ function Profile({ liked, onOpen }) {
     ))
   )}
 </section>
-        <div className="sectionHeader"><h2>Liked Anime</h2><span>{likedAnime.length}</span></div>
-        {(likedAnime.length ? likedAnime : ANIME.slice(0,4)).map(a => (
-          <button key={a.id} className="likedRow" onClick={() => onOpen(a)}>
-            <img src={a.image} alt="" /><div><b>{a.title}</b><span>{a.episode}</span><small>{a.date}</small></div><Heart size={16} fill="currentColor"/>
-          </button>
-        ))}
-      </section>
+        
     </>
   );
 }
