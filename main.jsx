@@ -99,7 +99,7 @@ function App() {
       (category === "All" || a.category === category) &&
       (!q || `${a.title} ${a.episode}`.toLowerCase().includes(q))
     );
-  }, [query, category]);
+  }, [query, category, animeList]);
 
   const openAnime = (anime) => {
     setSelected(anime);
