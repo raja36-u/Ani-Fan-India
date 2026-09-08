@@ -6,6 +6,7 @@ import {
   Crown, X, Gift, CheckCircle2, History, Sparkles, CalendarDays
 } from "lucide-react";
 import "./styles.css";
+import { createClient } from "@supabase/supabase-js";
 
 const ANIME = [
   { id: 1, title: "Solo Leveling", episode: "Episode 12", views: "12.8K", likes: 1200, date: "12/04/2026", pinned: true, category: "Top Rated",
