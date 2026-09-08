@@ -46,6 +46,10 @@ function App() {
   const [adStep, setAdStep] = useState(0);
   const [showAds, setShowAds] = useState(false);
   const [animeList, setAnimeList] = useState(ANIME);
+  supabase
+  .from("anime")
+  .select("*")
+  .order("created_at", { ascending: false });
 
 useEffect(() => {
   async function loadAnime() {
