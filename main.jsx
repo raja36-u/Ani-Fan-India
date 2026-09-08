@@ -41,15 +41,7 @@ function App() {
   const [adStep, setAdStep] = useState(0);
   const [showAds, setShowAds] = useState(false);
 
-  useEffect(() => {
-    const tg = telegram();
-    if (tg) {
-      tg.ready();
-      tg.expand();
-      tg.setHeaderColor?.("#08101c");
-      tg.setBackgroundColor?.("#050711");
-    }
-  }, []);
+  useEffect(() => {}, []);
 
  useEffect(() => {
   const startParam =
