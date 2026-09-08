@@ -389,6 +389,34 @@ function Profile({ liked, onOpen }) {
       </div>
 
       <section className="likedPreview">
+  <div className="sectionHeader">
+    <h2>Liked Anime</h2>
+    <span>{likedAnime.length}</span>
+  </div>
+
+  {likedAnime.length === 0 ? (
+    <div className="emptyLiked">
+      <Heart size={32} />
+      <p>No liked anime yet</p>
+      <small>Like an anime and it will appear here.</small>
+    </div>
+  ) : (
+    likedAnime.map(a => (
+      <button
+        key={a.id}
+        className="likedRow"
+        onClick={() => onOpen(a)}
+      >
+        <img src={a.image} alt="" />
+        <div>
+          <b>{a.title}</b>
+          <span>{a.episode}</span>
+        </div>
+        <Heart size={22} fill="currentColor" />
+      </button>
+    ))
+  )}
+</section>
         <div className="sectionHeader"><h2>Liked Anime</h2><span>{likedAnime.length}</span></div>
         {(likedAnime.length ? likedAnime : ANIME.slice(0,4)).map(a => (
           <button key={a.id} className="likedRow" onClick={() => onOpen(a)}>
