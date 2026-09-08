@@ -381,10 +381,6 @@ function Profile({ liked, onOpen }) {
         <div><h1>{displayName} 👑</h1><p>{username}</p><span className="lover"><Crown size={12}/> Anime Lover</span></div>
       </section>
 
-      <div className="stats">
-        <div><b>12</b><span>Posts</span></div><div><b>5.8K</b><span>Followers</span></div><div><b>3.2K</b><span>Following</span></div>
-      </div>
-
       <div className="profileMenu">
         <button onClick={() => alert(likedAnime.length ? `${likedAnime.length} liked anime` : "No liked anime yet")}><Heart size={17}/> Liked Anime <ChevronRight size={17}/></button>
         <button><History size={17}/> Watched History <ChevronRight size={17}/></button>
