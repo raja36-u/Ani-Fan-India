@@ -534,6 +534,12 @@ function AdminPage({ animeList, setAnimeList }) {
 
       <div className="adminCard">
   <h3>Anime Management</h3>
+        <button
+  className="adminAddBtn"
+  onClick={() => alert("Add Anime")}
+>
+  + Add Anime
+</button>
 
   {animeList.length === 0 ? (
     <p>No anime found.</p>
