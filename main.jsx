@@ -512,9 +512,22 @@ function AdminPage({ animeList }) {
       <p>Ani-Fan India Management</p>
 
       <div className="adminCard">
-        <h3>Anime Management</h3>
-        <p>Add, edit, delete and pin anime episodes.</p>
+  <h3>Anime Management</h3>
+
+  {animeList.length === 0 ? (
+    <p>No anime found.</p>
+  ) : (
+    animeList.map((anime) => (
+      <div key={anime.id} className="adminAnimeRow">
+        <img src={anime.image} alt="" />
+        <div>
+          <b>{anime.title}</b>
+          <p>{anime.episode}</p>
+        </div>
       </div>
+    ))
+  )}
+</div>
     </section>
   );
 }
