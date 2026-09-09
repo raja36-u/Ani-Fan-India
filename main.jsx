@@ -535,6 +535,49 @@ const [pinned, setPinned] = useState(false);
 
   setAnimeList(list => list.filter(a => a.id !== id));
 };
+  const addAnime = async () => {
+  if (!title || !episode || !category || !imageUrl || !episodeUrl) {
+    alert("Please fill all fields.");
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("anime")
+    .insert({
+      title,
+      episode,
+      category,
+      image_url: imageUrl,
+      episode_url: episodeUrl,
+      pinned,
+      views: 0,
+      likes: 0,
+      reports: 0,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    alert("Add anime failed.");
+    return;
+  }
+
+  setAnimeList(list => [
+    {
+      ...data,
+      image: data.image_url,
+    },
+    ...list,
+  ]);
+
+  setTitle("");
+  setEpisode("");
+  setCategory("");
+  setImageUrl("");
+  setEpisodeUrl("");
+  setPinned(false);
+  setShowAddForm(false);
+};
   return (
     <section className="adminPage">
       <h2>Admin Panel</h2>
