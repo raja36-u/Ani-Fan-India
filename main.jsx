@@ -516,6 +516,7 @@ function AdminPage({ animeList, setAnimeList }) {
 const [episode, setEpisode] = useState("");
 const [category, setCategory] = useState("All");
 const [imageUrl, setImageUrl] = useState("");
+const [imageFile, setImageFile] = useState(null);
 const [episodeUrl, setEpisodeUrl] = useState("");
 const [pinned, setPinned] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -687,6 +688,12 @@ const [pinned, setPinned] = useState(false);
       value={imageUrl}
       onChange={(e) => setImageUrl(e.target.value)}
     />
+
+    <input
+  type="file"
+  accept="image/*"
+  onChange={(e) => setImageFile(e.target.files[0])}
+/>
 
     <input
       type="text"
