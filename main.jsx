@@ -604,6 +604,7 @@ const [pinned, setPinned] = useState(false);
         </div>
         <button
   onClick={() => {
+    setEditingId(anime.id);
     setTitle(anime.title);
     setEpisode(anime.episode);
     setCategory(anime.category);
