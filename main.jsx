@@ -559,6 +559,20 @@ const [pinned, setPinned] = useState(false);
           <p>{anime.episode}</p>
         </div>
         <button
+  onClick={() => {
+    setTitle(anime.title);
+    setEpisode(anime.episode);
+    setCategory(anime.category);
+    setImageUrl(anime.image_url);
+    setEpisodeUrl(anime.episode_url);
+    setPinned(anime.pinned);
+    setShowAddForm(true);
+  }}
+  className="adminEditBtn"
+>
+  Edit
+</button>
+        <button
   onClick={() => deleteAnime(anime.id)}
   className="adminDeleteBtn"
 >
