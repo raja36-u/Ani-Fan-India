@@ -519,6 +519,27 @@ const [imageUrl, setImageUrl] = useState("");
 const [episodeUrl, setEpisodeUrl] = useState("");
 const [pinned, setPinned] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const togglePin = async (anime) => {
+  const nextPinned = !anime.pinned;
+
+  const { error } = await supabase
+    .from("anime")
+    .update({ pinned: nextPinned })
+    .eq("id", anime.id);
+
+  if (error) {
+    alert("Pin update failed.");
+    return;
+  }
+
+  setAnimeList(list =>
+    list.map(a =>
+      a.id === anime.id
+        ? { ...a, pinned: nextPinned }
+        : a
+    )
+  );
+};
   const deleteAnime = async (id) => {
   const ok = window.confirm("Delete this anime?");
   if (!ok) return;
@@ -622,6 +643,12 @@ const [pinned, setPinned] = useState(false);
   className="adminDeleteBtn"
 >
   Delete
+</button>
+        <button
+  onClick={() => togglePin(anime)}
+  className="adminPinBtn"
+>
+  {anime.pinned ? "Unpin" : "Pin"}
 </button>
       </div>
     ))
