@@ -556,7 +556,7 @@ const [pinned, setPinned] = useState(false);
       episode,
       category,
       image_url: imageUrl,
-      episode_url: episodeUrl,
+      episode_url: `https://t.me/AniFanIndiabot/AniFanIndia?startapp=episode_${editingId}`,
       pinned,
     })
     .eq("id", editingId)
