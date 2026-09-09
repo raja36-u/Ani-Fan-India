@@ -518,6 +518,7 @@ const [category, setCategory] = useState("All");
 const [imageUrl, setImageUrl] = useState("");
 const [episodeUrl, setEpisodeUrl] = useState("");
 const [pinned, setPinned] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const deleteAnime = async (id) => {
   const ok = window.confirm("Delete this anime?");
   if (!ok) return;
