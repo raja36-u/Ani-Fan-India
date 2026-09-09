@@ -108,7 +108,41 @@ function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const toggleLike = (id) => setLiked(v => ({ ...v, [id]: !v[id] }));
+  const toggleLike = async (id) => {
+  const isLiked = !!liked[id];
+
+  const { data, error } = await supabase
+    .from("anime")
+    .select("likes")
+    .eq("id", id)
+    .single();
+
+  if (error || !data) return;
+
+  const nextLikes = Math.max(
+    0,
+    (data.likes || 0) + (isLiked ? -1 : 1)
+  );
+
+  const { error: updateError } = await supabase
+    .from("anime")
+    .update({ likes: nextLikes })
+    .eq("id", id);
+
+  if (updateError) return;
+
+  setLiked(v => ({ ...v, [id]: !isLiked }));
+
+  setAnimeList(list =>
+    list.map(a =>
+      a.id === id ? { ...a, likes: nextLikes } : a
+    )
+  );
+
+  setSelected(s =>
+    s && s.id === id ? { ...s, likes: nextLikes } : s
+  );
+};
 
   const shareAnime = (anime) => {
   const appUrl = "https://t.me/AniFanIndiabot/AniFanIndia";
