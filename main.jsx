@@ -269,6 +269,7 @@ function App() {
     liked={liked}
     onOpen={openAnime}
     isAdmin={isAdmin}
+    onAdmin={() => setTab("admin")}
   />
 )}
     </Shell>
@@ -503,7 +504,7 @@ function AnimeSearchPage({ query, setQuery, onOpen }) {
   );
 }
 
-function Profile({ liked, onOpen }) {
+function Profile({ liked, onOpen, isAdmin }) {
     const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
 
   const displayName =
