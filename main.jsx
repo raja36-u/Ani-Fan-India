@@ -654,7 +654,7 @@ if (imageFile) {
     .single();
 
   if (error) {
-    alert("Add anime failed.");
+    alert(error.message);
     return;
   }
 
