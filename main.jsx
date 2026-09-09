@@ -602,10 +602,41 @@ const [pinned, setPinned] = useState(false);
   setAnimeList(list => list.filter(a => a.id !== id));
 };
   const addAnime = async () => {
-  if (!title || !episode || !category || !imageUrl || !episodeUrl) {
-    alert("Please fill all fields.");
+  if (
+  !title ||
+  !episode ||
+  !category ||
+  (!imageUrl && !imageFile) ||
+  !episodeUrl
+) {
+  alert("Please fill all fields.");
+  return;
+}
+
+    let finalImageUrl = imageUrl;
+
+if (imageFile) {
+  const fileExt = imageFile.name.split(".").pop();
+  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+  const filePath = `images/${fileName}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("anime-media")
+    .upload(filePath, imageFile, {
+      upsert: false,
+    });
+
+  if (uploadError) {
+    alert("Image upload failed.");
     return;
   }
+
+  const { data: publicUrlData } = supabase.storage
+    .from("anime-media")
+    .getPublicUrl(filePath);
+
+  finalImageUrl = publicUrlData.publicUrl;
+}
 
   const { data, error } = await supabase
     .from("anime")
@@ -613,7 +644,7 @@ const [pinned, setPinned] = useState(false);
       title,
       episode,
       category,
-      image_url: imageUrl,
+      image_url: finalImageUrl,
       episode_url: episodeUrl,
       pinned,
       views: 0,
