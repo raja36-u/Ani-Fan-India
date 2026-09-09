@@ -114,3 +114,29 @@ radial-gradient(circle at 95% 30%,rgba(47,70,255,.07),transparent 24%),#050711}
 .adminAnime > div {
   flex: 1;
 }
+
+.adminForm input {
+  width: 100%;
+  box-sizing: border-box;
+  background: #111827;
+  color: #ffffff;
+  border: 1px solid #4b5563;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 6px 0;
+  font-size: 16px;
+  outline: none;
+}
+
+.adminForm input::placeholder {
+  color: #9ca3af;
+}
+
+.adminForm input:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+}
+
+.adminForm label {
+  color: #ffffff;
+}
