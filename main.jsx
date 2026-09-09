@@ -533,6 +533,15 @@ function Profile({ liked, onOpen, isAdmin, onAdmin }) {
         <button><History size={17}/> Watched History <ChevronRight size={17}/></button>
         <button><Settings size={17}/> Settings <ChevronRight size={17}/></button>
         <button><Headphones size={17}/> Help & Support <ChevronRight size={17}/></button>
+        
+        {isAdmin && (
+  <button onClick={onAdmin}>
+    <Settings size={17} />
+    <span>Admin Panel</span>
+    <ChevronRight size={17} />
+  </button>
+)}
+        
       </div>
 
       <section className="likedPreview">
