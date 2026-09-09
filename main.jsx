@@ -369,8 +369,21 @@ function DetailPage({ anime, animeList, liked, reported, adStep, showAds, setSho
               {adStep >= 2 ? "Unlocked ✓" : `▶ Watch Ad`}
             </button>
             <small>After completing 2 ads, you will get the link to watch this episode.</small>
-            {adStep >= 2 && <button className="episodeOpen" onClick={() => alert("Connect this button to your Telegram channel / episode URL.")}>Open Episode Link</button>}
-          </div>
+            {adStep >= 2 && (
+  <button
+    className="episodeOpen"
+    onClick={() => {
+      if (anime.episode_url) {
+        window.open(anime.episode_url, "_blank");
+      } else {
+        alert("Episode link not available.");
+      }
+    }}
+  >
+    Open Episode Link
+  </button>
+)}
+            </div>
         </div>
       )}
     </>
