@@ -540,6 +540,50 @@ const [pinned, setPinned] = useState(false);
     )
   );
 };
+  const updateAnime = async () => {
+  if (!editingId) return;
+
+  if (!title || !episode || !category || !imageUrl || !episodeUrl) {
+    alert("Please fill all fields.");
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("anime")
+    .update({
+      title,
+      episode,
+      category,
+      image_url: imageUrl,
+      episode_url: episodeUrl,
+      pinned,
+    })
+    .eq("id", editingId)
+    .select()
+    .single();
+
+  if (error) {
+    alert("Update anime failed.");
+    return;
+  }
+
+  setAnimeList(list =>
+    list.map(a =>
+      a.id === editingId
+        ? { ...data, image: data.image_url }
+        : a
+    )
+  );
+
+  setEditingId(null);
+  setTitle("");
+  setEpisode("");
+  setCategory("");
+  setImageUrl("");
+  setEpisodeUrl("");
+  setPinned(false);
+  setShowAddForm(false);
+};
   const deleteAnime = async (id) => {
   const ok = window.confirm("Delete this anime?");
   if (!ok) return;
