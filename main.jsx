@@ -606,8 +606,7 @@ const [pinned, setPinned] = useState(false);
   !title ||
   !episode ||
   !category ||
-  (!imageUrl && !imageFile) ||
-  !episodeUrl
+  (!imageUrl && !imageFile)
 ) {
   alert("Please fill all fields.");
   return;
