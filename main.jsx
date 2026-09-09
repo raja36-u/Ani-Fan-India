@@ -272,7 +272,7 @@ function App() {
     onAdmin={() => setTab("admin")}
   />
 )}
-      {tab === "admin" && <AdminPage />}
+      {tab === "admin" && <AdminPage animeList={animeList} />}
     </Shell>
   );
 }
