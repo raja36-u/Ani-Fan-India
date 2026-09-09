@@ -272,6 +272,7 @@ function App() {
     onAdmin={() => setTab("admin")}
   />
 )}
+      {tab === "admin" && <AdminPage />}
     </Shell>
   );
 }
