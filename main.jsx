@@ -193,8 +193,25 @@ function App() {
   } catch {}
 };
 
-  const reportAnime = (id) => {
-    setReported(v => ({ ...v, [id]: true }));
+  const reportAnime = async (id) => {
+  const { data, error } = await supabase
+    .from("anime")
+    .select("reports")
+    .eq("id", id)
+    .single();
+
+  if (error || !data) return;
+
+  const nextReports = (data.reports || 0) + 1;
+
+  const { error: updateError } = await supabase
+    .from("anime")
+    .update({ reports: nextReports })
+    .eq("id", id);
+
+  if (updateError) return;
+
+  setReported(v => ({ ...v, [id]: true }));
   };
 
   if (selected) {
