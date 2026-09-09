@@ -306,13 +306,26 @@ function DetailPage({ anime, animeList, liked, reported, adStep, showAds, setSho
 
       <section className="moreSection">
         <div className="sectionHeader"><h2>More Episodes</h2><span>View All</span></div>
-        {[499, 498, 497].map(ep => (
-          <button className="episodeRow" key={ep} onClick={() => onOpen({...anime, id: `${anime.id}-${ep}`, episode: `Episode ${ep}`})}>
-            <img src={anime.image} alt="" />
-            <div><b>{anime.title}</b><span>Episode {ep}</span><small><Eye size={11}/> {ep === 499 ? "12.1K" : "8.6K"}</small></div>
-            <Heart size={16} className="heartGhost"/>
-          </button>
-        ))}
+        {animeList
+  .filter(item => item.title === anime.title && item.id !== anime.id)
+  .slice(0, 5)
+  .map(item => (
+    <button
+      className="episodeRow"
+      key={item.id}
+      onClick={() => onOpen(item)}
+    >
+      <img src={item.image} alt="" />
+      <div>
+        <b>{item.title}</b>
+        <span>{item.episode}</span>
+        <small>
+          <Eye size={11} /> {item.views || 0}
+        </small>
+      </div>
+      <Heart size={16} className="heartGhost" />
+    </button>
+  ))}
       </section>
 
       {showAds && (
