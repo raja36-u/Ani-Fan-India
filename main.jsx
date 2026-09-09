@@ -272,7 +272,12 @@ function App() {
     onAdmin={() => setTab("admin")}
   />
 )}
-      {tab === "admin" && <AdminPage animeList={animeList} />}
+      {tab === "admin" && (
+  <AdminPage
+    animeList={animeList}
+    setAnimeList={setAnimeList}
+  />
+)}
     </Shell>
   );
 }
@@ -505,7 +510,7 @@ function AnimeSearchPage({ query, setQuery, onOpen }) {
   );
 }
 
-function AdminPage({ animeList }) {
+function AdminPage({ animeList, setAnimeList }) {
   return (
     <section className="adminPage">
       <h2>Admin Panel</h2>
