@@ -511,6 +511,22 @@ function AnimeSearchPage({ query, setQuery, onOpen }) {
 }
 
 function AdminPage({ animeList, setAnimeList }) {
+  const deleteAnime = async (id) => {
+  const ok = window.confirm("Delete this anime?");
+  if (!ok) return;
+
+  const { error } = await supabase
+    .from("anime")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    alert("Delete failed.");
+    return;
+  }
+
+  setAnimeList(list => list.filter(a => a.id !== id));
+};
   return (
     <section className="adminPage">
       <h2>Admin Panel</h2>
@@ -529,6 +545,12 @@ function AdminPage({ animeList, setAnimeList }) {
           <b>{anime.title}</b>
           <p>{anime.episode}</p>
         </div>
+        <button
+  onClick={() => deleteAnime(anime.id)}
+  className="adminDeleteBtn"
+>
+  Delete
+</button>
       </div>
     ))
   )}
