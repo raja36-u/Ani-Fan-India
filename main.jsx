@@ -12,6 +12,8 @@ const supabase = createClient(
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
 );
 
+const ADMIN_ID = "8127159825";
+
 const ANIME = [
   { id: 1, title: "Solo Leveling", episode: "Episode 12", views: "12.8K", likes: 1200, date: "12/04/2026", pinned: true, category: "Top Rated",
     image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=85" },
