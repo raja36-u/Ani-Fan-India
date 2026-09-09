@@ -46,3 +46,10 @@ radial-gradient(circle at 95% 30%,rgba(47,70,255,.07),transparent 24%),#050711}
   align-items: center;
   gap: 12px;
 }
+
+.adminCard img {
+  width: 70px !important;
+  height: 90px !important;
+  object-fit: cover;
+  border-radius: 10px;
+}
