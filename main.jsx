@@ -657,6 +657,79 @@ const [pinned, setPinned] = useState(false);
   + Add Anime
 </button>
 
+        {showAddForm && (
+  <div className="adminForm">
+
+    <input
+      type="text"
+      placeholder="Anime Title"
+      value={title}
+      onChange={(e) => setTitle(e.target.value)}
+    />
+
+    <input
+      type="text"
+      placeholder="Episode"
+      value={episode}
+      onChange={(e) => setEpisode(e.target.value)}
+    />
+
+    <input
+      type="text"
+      placeholder="Category"
+      value={category}
+      onChange={(e) => setCategory(e.target.value)}
+    />
+
+    <input
+      type="text"
+      placeholder="Thumbnail Image URL"
+      value={imageUrl}
+      onChange={(e) => setImageUrl(e.target.value)}
+    />
+
+    <input
+      type="text"
+      placeholder="Episode Link"
+      value={episodeUrl}
+      onChange={(e) => setEpisodeUrl(e.target.value)}
+    />
+
+    <label>
+      <input
+        type="checkbox"
+        checked={pinned}
+        onChange={(e) => setPinned(e.target.checked)}
+      />
+      Pin Anime
+    </label>
+
+    <button
+      className="adminSaveBtn"
+      onClick={editingId ? updateAnime : addAnime}
+    >
+      {editingId ? "Update Anime" : "Save Anime"}
+    </button>
+
+    <button
+      className="adminCancelBtn"
+      onClick={() => {
+        setEditingId(null);
+        setTitle("");
+        setEpisode("");
+        setCategory("");
+        setImageUrl("");
+        setEpisodeUrl("");
+        setPinned(false);
+        setShowAddForm(false);
+      }}
+    >
+      Cancel
+    </button>
+
+  </div>
+)}
+
   {animeList.length === 0 ? (
     <p>No anime found.</p>
   ) : (
