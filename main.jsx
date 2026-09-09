@@ -308,6 +308,11 @@ function DetailPage({ anime, animeList, liked, reported, adStep, showAds, setSho
         <div className="sectionHeader"><h2>More Episodes</h2><span>View All</span></div>
         {animeList
   .filter(item => item.title === anime.title && item.id !== anime.id)
+  .sort((a, b) => {
+    const epA = parseInt(String(a.episode).replace(/\D/g, "")) || 0;
+    const epB = parseInt(String(b.episode).replace(/\D/g, "")) || 0;
+    return epA - epB;
+  })
   .slice(0, 5)
   .map(item => (
     <button
