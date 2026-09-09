@@ -504,7 +504,7 @@ function AnimeSearchPage({ query, setQuery, onOpen }) {
   );
 }
 
-function Profile({ liked, onOpen, isAdmin }) {
+function Profile({ liked, onOpen, isAdmin, onAdmin }) {
     const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
 
   const displayName =
