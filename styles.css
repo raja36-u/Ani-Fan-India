@@ -53,3 +53,52 @@ radial-gradient(circle at 95% 30%,rgba(47,70,255,.07),transparent 24%),#050711}
   object-fit: cover;
   border-radius: 10px;
 }
+
+.adminAddBtn,
+.adminEditBtn,
+.adminDeleteBtn {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  margin: 6px 4px 6px 0;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.adminAddBtn {
+  background: #7c3aed;
+  color: white;
+}
+
+.adminEditBtn {
+  background: #2563eb;
+  color: white;
+}
+
+.adminDeleteBtn {
+  background: #dc2626;
+  color: white;
+}
+
+.adminAnime {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.05);
+}
+
+.adminAnime img {
+  width: 70px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.adminAnime > div {
+  flex: 1;
+}
