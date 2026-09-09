@@ -505,7 +505,7 @@ function AnimeSearchPage({ query, setQuery, onOpen }) {
   );
 }
 
-function AdminPage() {
+function AdminPage({ animeList }) {
   return (
     <section className="adminPage">
       <h2>Admin Panel</h2>
