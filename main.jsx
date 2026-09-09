@@ -264,7 +264,13 @@ function App() {
       {tab === "anime" && (
         <AnimeSearchPage query={query} setQuery={setQuery} onOpen={openAnime} />
       )}
-      {tab === "profile" && <Profile liked={liked} onOpen={openAnime} />}
+      {tab === "profile" && (
+  <Profile
+    liked={liked}
+    onOpen={openAnime}
+    isAdmin={isAdmin}
+  />
+)}
     </Shell>
   );
 }
