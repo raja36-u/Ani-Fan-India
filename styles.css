@@ -140,3 +140,54 @@ radial-gradient(circle at 95% 30%,rgba(47,70,255,.07),transparent 24%),#050711}
 .adminForm label {
   color: #ffffff;
 }
+
+/* Admin form dark theme */
+.adminForm input {
+  width: 100%;
+  box-sizing: border-box;
+  background: #111827;
+  color: #ffffff;
+  border: 1px solid #475569;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  outline: none;
+}
+
+.adminForm input::placeholder {
+  color: #94a3b8;
+}
+
+.adminForm input:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+}
+
+/* Checkbox */
+.adminForm input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #8b5cf6;
+  margin: 10px 8px 10px 0;
+}
+
+/* Update + Cancel buttons */
+.adminForm button {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  margin: 5px 4px 5px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  background: #7c3aed;
+}
+
+.adminForm button:last-child {
+  background: #334155;
+}
+
+.adminForm button:hover {
+  opacity: 0.9;
+}
