@@ -505,6 +505,20 @@ function AnimeSearchPage({ query, setQuery, onOpen }) {
   );
 }
 
+function AdminPage() {
+  return (
+    <section className="adminPage">
+      <h2>Admin Panel</h2>
+      <p>Ani-Fan India Management</p>
+
+      <div className="adminCard">
+        <h3>Anime Management</h3>
+        <p>Add, edit, delete and pin anime episodes.</p>
+      </div>
+    </section>
+  );
+}
+
 function Profile({ liked, onOpen, isAdmin, onAdmin }) {
     const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
 
