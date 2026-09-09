@@ -511,6 +511,13 @@ function AnimeSearchPage({ query, setQuery, onOpen }) {
 }
 
 function AdminPage({ animeList, setAnimeList }) {
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [title, setTitle] = useState("");
+const [episode, setEpisode] = useState("");
+const [category, setCategory] = useState("All");
+const [imageUrl, setImageUrl] = useState("");
+const [episodeUrl, setEpisodeUrl] = useState("");
+const [pinned, setPinned] = useState(false);
   const deleteAnime = async (id) => {
   const ok = window.confirm("Delete this anime?");
   if (!ok) return;
@@ -536,7 +543,7 @@ function AdminPage({ animeList, setAnimeList }) {
   <h3>Anime Management</h3>
         <button
   className="adminAddBtn"
-  onClick={() => alert("Add Anime")}
+  onClick={() => setShowAddForm(true)}
 >
   + Add Anime
 </button>
