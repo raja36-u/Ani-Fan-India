@@ -101,12 +101,36 @@ function App() {
     );
   }, [query, category, animeList]);
 
-  const openAnime = (anime) => {
+  const openAnime = async (anime) => {
+  const { data, error } = await supabase
+    .from("anime")
+    .select("views")
+    .eq("id", anime.id)
+    .single();
+
+  if (!error && data) {
+    const nextViews = (data.views || 0) + 1;
+
+    await supabase
+      .from("anime")
+      .update({ views: nextViews })
+      .eq("id", anime.id);
+
+    const updatedAnime = { ...anime, views: nextViews };
+
+    setAnimeList(list =>
+      list.map(a => a.id === anime.id ? updatedAnime : a)
+    );
+
+    setSelected(updatedAnime);
+  } else {
     setSelected(anime);
-    setAdStep(0);
-    setShowAds(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  }
+
+  setAdStep(0);
+  setShowAds(false);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
 
   const toggleLike = async (id) => {
   const isLiked = !!liked[id];
