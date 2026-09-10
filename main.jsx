@@ -727,6 +727,12 @@ if (imageFile) {
 />
 
     <input
+  type="file"
+  accept="video/*"
+  onChange={(e) => setVideoFile(e.target.files[0])}
+/>
+
+    <input
       type="text"
       placeholder="Episode Link"
       value={episodeUrl}
