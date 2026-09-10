@@ -638,6 +638,30 @@ if (imageFile) {
   finalImageUrl = publicUrlData.publicUrl;
 }
 
+let finalVideoUrl = "";
+
+if (videoFile) {
+  const fileExt = videoFile.name.split(".").pop();
+  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+  const filePath = `videos/${fileName}`;
+
+  const { error: videoUploadError } = await supabase.storage
+    .from("anime-media")
+    .upload(filePath, videoFile, {
+      upsert: false,
+    });
+
+  if (videoUploadError) {
+    alert("Video upload failed.");
+    return;
+  }
+
+  const { data: videoUrlData } = supabase.storage
+    .from("anime-media")
+    .getPublicUrl(filePath);
+
+  finalVideoUrl = videoUrlData.publicUrl;
+}
   const { data, error } = await supabase
     .from("anime")
     .insert({
@@ -645,6 +669,7 @@ if (imageFile) {
       episode,
       category,
       image_url: finalImageUrl,
+      video_url: finalVideoUrl,
       episode_url: episodeUrl,
       pinned,
       views: 0,
