@@ -517,6 +517,7 @@ const [episode, setEpisode] = useState("");
 const [category, setCategory] = useState("All");
 const [imageUrl, setImageUrl] = useState("");
 const [imageFile, setImageFile] = useState(null);
+const [videoFile, setVideoFile] = useState(null);
 const [episodeUrl, setEpisodeUrl] = useState("");
 const [pinned, setPinned] = useState(false);
   const [editingId, setEditingId] = useState(null);
