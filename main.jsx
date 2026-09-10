@@ -545,7 +545,7 @@ const [pinned, setPinned] = useState(false);
   const updateAnime = async () => {
   if (!editingId) return;
 
-  if (!title || !episode || !category || !imageUrl || !episodeUrl) {
+  if (!title || !episode || !category || (!imageUrl && !imageFile)) {
     alert("Please fill all fields.");
     return;
   }
