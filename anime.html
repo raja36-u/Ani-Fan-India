@@ -1,0 +1,2814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@700;800&display=swap" rel="stylesheet">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Browse Anime — AnimeFan</title>
+<style>
+:root{
+  --bg:#0b0b0f; --card:#14141c; --border:rgba(255,255,255,0.08);
+  --accent:#a855f7; --accent2:#ec4899; --muted:#a1a1aa;
+  --grad: linear-gradient(90deg, #a855f7, #ec4899);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:#fff;min-height:100vh;overflow-x:hidden;}
+a{color:inherit;}
+
+.navbar.scrolled{
+  background:rgba(7,9,14,0.55) !important;
+  backdrop-filter:blur(12px) !important;
+}
+.navbar{
+  position:fixed;top:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.75rem 4%;
+  background:transparent;
+  backdrop-filter:none;
+  transition:background 0.25s,backdrop-filter 0.25s;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.logo{font-weight:800;font-size:1.3rem;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;}
+.nav-links{display:flex;gap:1.35rem;list-style:none;align-items:center;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.92rem;font-weight:500;transition:0.2s;}
+.nav-links a:hover,.nav-links a.active{color:#fff;}
+.nav-right{display:flex;align-items:center;gap:0.5rem;}
+.icon-btn{
+  width:38px;height:38px;border-radius:50%;
+  border:1px solid rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.06);
+  color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.icon-btn:hover{background:rgba(255,255,255,0.12);}
+.filters-nav-btn{
+  display:inline-flex;align-items:center;gap:0.35rem;
+  height:38px;padding:0 0.85rem;border-radius:999px;
+  border:1px solid rgba(168,85,247,0.4);
+  background:rgba(139,92,246,0.12);
+  color:#e9d5ff;font-weight:600;font-size:0.82rem;
+  cursor:pointer;font-family:inherit;transition:0.2s;
+}
+.filters-nav-btn:hover,.filters-nav-btn.open{
+  background:rgba(139,92,246,0.28);
+  border-color:rgba(168,85,247,0.65);
+  color:#fff;
+}
+.profile-btn{
+  width:38px;height:38px;border-radius:50%;border:2px solid rgba(168,85,247,0.5);
+  background:linear-gradient(135deg,#7c3aed,#ec4899);cursor:pointer;
+}
+
+.nav-actions{
+  display:flex;align-items:center;gap:14px;
+  padding:0;background:transparent;border:none;
+}
+.nav-actions .icon-btn{
+  width:26px;height:26px;border:none;background:transparent;padding:0;
+}
+.nav-actions .icon-btn:hover{background:transparent;opacity:0.85;}
+.nav-actions .profile-btn{
+  width:27px;height:27px;border-radius:50%;
+  border:none;overflow:hidden;padding:0;display:block;
+  background:#1a1a24;
+  box-shadow:0 0 0 2px #000, 0 0 0 4px #ef4444;
+}
+.nav-actions .profile-btn img{width:100%;height:100%;object-fit:cover;display:block;}
+
+.menu-btn{display:none;background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;}
+@media(max-width:800px){
+  .nav-links{display:none;}
+  .menu-btn{display:block;}
+}
+
+/* Search overlay — home style */
+.search-overlay{
+  position:fixed;inset:0;z-index:200;
+  display:flex;flex-direction:column;align-items:center;
+  background:rgba(0,0,0,0);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity 0.28s,visibility 0.28s,background 0.28s;
+}
+.search-overlay.open{
+  opacity:1;visibility:visible;pointer-events:auto;
+  background:rgba(5,5,10,0.82);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+.search-overlay-panel{
+  width:100%;max-width:640px;margin:0 auto;
+  padding:1.4rem 1.25rem 1.5rem;
+  transform:translateY(-24px) scale(0.96);opacity:0;
+  transition:transform 0.3s cubic-bezier(0.22,1,0.36,1),opacity 0.3s;
+}
+.search-overlay.open .search-overlay-panel{
+  transform:translateY(0) scale(1);opacity:1;
+}
+.search-overlay-bar{
+  display:flex;align-items:center;gap:14px;
+  background:linear-gradient(180deg,rgba(30,30,42,0.95),rgba(18,18,28,0.98));
+  border:1px solid rgba(168,85,247,0.35);
+  border-radius:16px;
+  padding:0.85rem 1.1rem;
+  box-shadow:0 12px 40px rgba(0,0,0,0.45),0 0 0 1px rgba(168,85,247,0.1);
+}
+.search-overlay-bar input{
+  flex:1;background:transparent;border:none;color:#fff;
+  font-size:1.05rem;outline:none;font-family:inherit;min-width:0;
+}
+.search-overlay-bar input::placeholder{color:#71717a;}
+.search-results{margin-top:1rem;max-height:55vh;overflow-y:auto;}
+.search-hit{
+  display:flex;align-items:center;gap:14px;
+  padding:0.7rem 0.85rem;border-radius:12px;
+  text-decoration:none;color:#fff;
+  background:rgba(255,255,255,0.03);
+  border:1px solid transparent;
+  margin-bottom:0.4rem;transition:0.2s;
+}
+.search-hit:hover{background:rgba(168,85,247,0.12);border-color:rgba(168,85,247,0.3);}
+.search-hit-thumb{
+  width:42px;height:56px;border-radius:8px;
+  background:linear-gradient(145deg,#1e1e2e,#2a1a3a);
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;
+}
+.search-hit-info strong{display:block;font-size:0.9rem;}
+.search-hit-info span{font-size:0.75rem;color:var(--muted);}
+
+.page{padding:1.4rem 0 3rem;max-width:none;margin:0 auto;}
+.page-header,.tools-row,.results-meta,.filter-panel,.pager{
+  padding-left:4%;padding-right:4%;max-width:1400px;margin-left:auto;margin-right:auto;box-sizing:border-box;
+}
+.page-header{max-width:none;}
+.tools-row{max-width:none;}
+.results-meta{max-width:none;}
+.filter-panel{max-width:none;margin-left:4%;margin-right:4%;width:auto;}
+.grid{
+  padding-left:0.5rem;padding-right:0.5rem;
+  max-width:none;
+  width:100%;
+}
+.page-header{margin-bottom:1.15rem;padding-left:4%;padding-right:4%;}
+.page-header h1{font-size:clamp(1.5rem,3vw,1.9rem);font-weight:800;letter-spacing:-0.02em;}
+.page-header p{color:var(--muted);font-size:0.9rem;margin-top:0.3rem;}
+
+.tools-row{
+  display:flex; align-items:center; gap:0.65rem;
+  margin-bottom:1.1rem;
+}
+.search-inline{
+  flex:1;
+  display:flex; align-items:center; gap:0.65rem;
+  padding:0.65rem 1rem;
+  border-radius:12px;
+  background:rgba(18,18,28,0.9);
+  border:1px solid rgba(255,255,255,0.1);
+  transition:border-color 0.2s, background 0.2s;
+  min-width:0;
+}
+.search-inline:focus-within{
+  border-color:rgba(168,85,247,0.5);
+  background:rgba(24,24,36,0.95);
+}
+.search-inline svg{ flex-shrink:0; color:#a855f7; }
+.search-inline input{
+  flex:1; min-width:0;
+  background:transparent; border:none; outline:none;
+  color:#fff; font-size:0.92rem; font-family:inherit;
+}
+.search-inline input::placeholder{ color:#71717a; }
+.filters-btn{
+  display:inline-flex; align-items:center; gap:0.4rem;
+  padding:0.75rem 1.1rem;
+  border-radius:12px;
+  background:rgba(139,92,246,0.15);
+  border:1px solid rgba(168,85,247,0.4);
+  color:#e9d5ff;
+  font-weight:600; font-size:0.88rem;
+  cursor:pointer; font-family:inherit;
+  transition:0.2s; white-space:nowrap;
+}
+.filters-btn:hover, .filters-btn.open{
+  background:rgba(139,92,246,0.28);
+  border-color:rgba(168,85,247,0.65);
+  color:#fff;
+}
+@media(max-width:800px){
+  .page{ padding:1.1rem 4% 2.5rem; }
+  .page-header h1{ font-size:1.45rem; }
+  /* same as desktop: search + filters in one row under title */
+  .tools-row{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    gap:0.5rem;
+    margin-bottom:1rem;
+  }
+  .search-inline{
+    flex:1;
+    min-width:0;
+    padding:0.7rem 0.85rem;
+    font-size:0.88rem;
+  }
+  .filters-btn{
+    flex-shrink:0;
+    padding:0.7rem 0.9rem;
+    font-size:0.84rem;
+  }
+  .filter-panel{
+    padding:1rem;
+    border-radius:16px;
+  }
+  .search-overlay-panel{
+    padding:1rem 0.85rem 1.25rem;
+    max-width:100%;
+  }
+  .search-overlay-bar{
+    padding:0.75rem 0.9rem;
+    border-radius:14px;
+  }
+  .search-overlay-bar input{ font-size:1rem; }
+}
+@media(max-width:480px){
+  .tools-row{
+    flex-direction:row; /* keep side by side like desktop */
+    align-items:center;
+  }
+  .filters-btn{
+    padding:0.7rem 0.75rem;
+  }
+}
+
+
+.filter-panel{
+  background:linear-gradient(145deg,rgba(30,28,55,0.95),rgba(18,18,32,0.98));
+  border:1px solid rgba(139,92,246,0.18);
+  border-radius:20px;
+  padding:1.15rem 1.25rem 1.25rem;
+  margin-bottom:1.35rem;
+  box-shadow:0 12px 40px rgba(0,0,0,0.35);
+  animation:filterIn 0.25s ease;
+}
+.filter-panel[hidden]{display:none !important;}
+@keyframes filterIn{
+  from{opacity:0;transform:translateY(-6px);}
+  to{opacity:1;transform:none;}
+}
+.filter-row{margin-bottom:0.95rem;}
+.filter-row:last-child{margin-bottom:0;}
+.filter-label{display:block;font-size:0.78rem;font-weight:600;color:#9ca3af;margin-bottom:0.45rem;}
+.chip-row{
+  display:flex;
+  flex-wrap:nowrap;
+  gap:0.45rem;
+  align-items:center;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  padding-bottom:2px;
+}
+.chip-row::-webkit-scrollbar{ display:none; }
+.chip-row::-webkit-scrollbar{ display:none; }
+.chip{
+  flex-shrink:0;
+  padding:0.38rem 0.9rem;border-radius:999px;font-size:0.82rem;font-weight:600;
+  border:1px solid rgba(255,255,255,0.12);background:rgba(15,15,25,0.7);
+  color:#d4d4d8;cursor:pointer;transition:0.2s;font-family:inherit;
+}
+.chip:hover{border-color:rgba(168,85,247,0.45);color:#fff;}
+.chip.active{
+  background:rgba(139,92,246,0.25);
+  border-color:rgba(168,85,247,0.65);
+  color:#fff;
+}
+.fields-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:0.75rem 1rem;
+}
+@media(max-width:900px){
+  .fields-grid{
+    grid-template-columns:1fr 1fr;
+  }
+}
+.field label{display:block;font-size:0.78rem;font-weight:600;color:#9ca3af;margin-bottom:0.4rem;}
+.field select{
+  width:100%;padding:0.65rem 0.9rem;border-radius:12px;
+  background:rgba(10,10,18,0.85);border:1px solid rgba(255,255,255,0.1);
+  color:#fff;font-size:0.88rem;font-family:inherit;outline:none;
+}
+.field select:focus{border-color:rgba(168,85,247,0.55);}
+.field select option{background:#12121a;}
+
+.results-meta{color:var(--muted);font-size:0.82rem;margin-bottom:1rem;}
+.grid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:0.65rem;width:100%;}
+@media(max-width:1100px) and (min-width:701px){.grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:0.6rem;}}
+@media(max-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0.55rem;padding-left:0.4rem;padding-right:0.4rem;}}
+@media(min-width:1100px){.grid{grid-template-columns:repeat(9,minmax(0,1fr));gap:0.65rem;}}
+
+.anime-card{
+  background:var(--card);border-radius:14px;overflow:hidden;
+  border:1px solid rgba(255,255,255,0.05);cursor:pointer;
+  transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s;
+  text-decoration:none;color:inherit;display:block;
+}
+.anime-card:hover{
+  transform:translateY(-6px) scale(1.02);
+  border-color:rgba(139,92,246,0.45);
+  box-shadow:0 16px 40px rgba(0,0,0,0.45),0 0 24px rgba(139,92,246,0.2);
+}
+.card-poster{
+  width:100%;aspect-ratio:2/3;
+  background:linear-gradient(145deg,#1e1e2e,#2a1a3a);
+  position:relative;display:flex;align-items:center;justify-content:center;
+  font-size:2.4rem;overflow:hidden;
+}
+.rating-badge{
+  position:absolute;top:7px;right:7px;z-index:2;
+  background:rgba(0,0,0,0.75);color:#fbbf24;
+  font-size:0.7rem;font-weight:700;padding:0.15rem 0.4rem;border-radius:6px;
+}
+.card-lang{
+  position:absolute;bottom:8px;right:8px;z-index:2;
+  color:#fff;font-size:0.65rem;font-weight:700;
+  padding:0.22rem 0.55rem;border-radius:6px;
+}
+.card-lang.lang-hindi{background:linear-gradient(135deg,#7c3aed,#8b5cf6);}
+.card-lang.lang-hsub{background:linear-gradient(135deg,#d97706,#f59e0b);}
+.card-lang.lang-fandub{background:linear-gradient(135deg,#db2777,#ec4899);}
+.card-lang.lang-dual{background:linear-gradient(135deg,#0ea5e9,#8b5cf6);}
+.card-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(8,8,16,0.92),rgba(0,0,0,0.2));
+  opacity:0;transition:opacity 0.2s;display:flex;align-items:center;justify-content:center;z-index:3;
+  pointer-events:none;
+}
+.card-play{
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,#8b5cf6,#ec4899);
+  display:flex;align-items:center;justify-content:center;
+  transform:scale(0.75);opacity:0;transition:0.2s;
+  box-shadow:0 0 28px rgba(139,92,246,0.5);
+}
+.card-play svg{width:22px;height:22px;fill:#fff;margin-left:3px;}
+.anime-card:hover .card-overlay,.anime-card.show-play .card-overlay{opacity:1;}
+.anime-card:hover .card-play,.anime-card.show-play .card-play{transform:scale(1);opacity:1;}
+.card-body{padding:0.6rem 0.65rem 0.75rem;}
+.card-body h3{font-size:0.84rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:0.2rem;}
+.card-meta{font-size:0.7rem;color:var(--muted);}
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted);grid-column:1/-1;}
+.empty h3{color:#fff;margin-bottom:0.4rem;}
+.pager{display:flex;justify-content:center;gap:0.4rem;margin-top:1.75rem;flex-wrap:wrap;}
+.page-btn{
+  min-width:38px;height:38px;padding:0 0.7rem;border-radius:10px;
+  border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);
+  color:#fff;font-weight:600;cursor:pointer;font-family:inherit;
+}
+.page-btn.active{background:var(--grad);border-color:transparent;}
+.page-btn:disabled{opacity:0.35;cursor:default;}
+footer{text-align:center;padding:2rem 1rem;color:var(--muted);font-size:0.8rem;border-top:1px solid var(--border);margin-top:2rem;}
+
+
+
+/* === EXACT home navbar / menu / search === */
+.navbar {
+            position:fixed; top:0; left:0; right:0; z-index:100;
+            display:flex; align-items:center; justify-content:space-between;
+            padding: 0.45rem 2.5%;
+            background: transparent;
+            backdrop-filter: none;
+            border-bottom: none;
+            transition: background 0.35s ease, backdrop-filter 0.35s ease;
+        }
+.navbar.scrolled {
+            background: rgba(7, 9, 14, 0.55);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: none;
+        }
+.logo { font-family:'Orbitron',sans-serif; font-size:1.4rem; font-weight:800; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-decoration:none; }
+.nav-links { display:flex; gap:1.5rem; list-style:none; align-items:center; }
+.nav-links a { color:var(--muted); text-decoration:none; font-size:0.9rem; font-weight:500; }
+.nav-links a:hover, .nav-links a.active { color:#fff; }
+.nav-right { display:flex; align-items:center; gap:14px; }
+.menu-btn-OLD { display:none; background:none; border:none; color:#fff; font-size:1.4rem; cursor:pointer; }
+.footer-brand .logo { font-size:1.2rem; display:inline-block; margin-bottom:0.5rem; }
+.overlay {
+            position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:105;
+            opacity:0; visibility:hidden; transition:0.25s;
+        }
+.overlay.open { opacity:1; visibility:visible; }
+.nav-actions {
+            display:flex; align-items:center; gap:14px;
+            padding:0;
+            background:transparent;
+            border:none;
+            box-shadow:none;
+            backdrop-filter:none;
+        }
+.search-toggle {
+            width:26px; height:26px; border-radius:0;
+            border:none;
+            background:transparent;
+            color:#fff; cursor:pointer;
+            display:flex; align-items:center; justify-content:center;
+            padding:0;
+            transition:opacity 0.2s;
+        }
+.search-toggle:hover { opacity:0.8; background:transparent; border:none; }
+.search-toggle:hover { opacity:0.85; background:transparent; }
+.search-toggle svg { width:22px; height:22px; stroke:#fff; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.search-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 200;
+            display: flex; flex-direction: column; align-items: center;
+            padding-top: 0;
+            background: rgba(0,0,0,0);
+            backdrop-filter: blur(0px);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.28s ease, background 0.28s ease, backdrop-filter 0.28s ease, visibility 0.28s;
+        }
+.search-overlay.open {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            background: rgba(5,5,10,0.82);
+            backdrop-filter: blur(14px);
+        }
+.search-overlay-panel {
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 1rem 1.25rem 1.5rem;
+            transform: translateY(-24px) scale(0.96);
+            opacity: 0;
+            transition: transform 0.32s cubic-bezier(0.22,1,0.36,1), opacity 0.28s ease;
+        }
+.search-overlay.open .search-overlay-panel {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+.search-overlay-bar {
+            display: flex; align-items: center; gap: 0.75rem;
+            background: linear-gradient(180deg, rgba(30,30,42,0.95), rgba(18,18,28,0.98));
+            border: 1px solid rgba(168,85,247,0.35);
+            border-radius: 999px;
+            padding: 0.75rem 1.15rem;
+            width: 100%;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 12px 40px rgba(0,0,0,0.45), 0 0 30px rgba(168,85,247,0.12);
+        }
+.search-overlay-bar input {
+            flex: 1; background: transparent; border: none; color: #fff;
+            font-size: 1.05rem; outline: none; font-family: inherit;
+            min-width: 0;
+        }
+.search-overlay-bar input::placeholder { color: #71717a; }
+.search-results {
+            width: 100%; margin-top: 0.9rem; max-height: min(60vh, 420px); overflow-y: auto;
+            display: flex; flex-direction: column; gap: 0.4rem;
+            scrollbar-width: none;
+        }
+.search-results::-webkit-scrollbar { display: none; }
+.profile-wrap { position:relative; z-index:250; }
+.profile-btn {
+            width:27px; height:27px; border-radius:50%;
+            border:none;
+            background:#1a1a24; color:#fff;
+            cursor:pointer; display:flex; align-items:center; justify-content:center;
+            overflow:hidden; padding:0;
+            transition:transform 0.2s, opacity 0.2s;
+            box-shadow:  0 0 0 2px #000, 0 0 0 4px #ef4444;
+        }
+.profile-btn:hover { transform:scale(0.97); opacity:0.9; }
+.profile-btn svg { width:20px; height:20px; fill:#fff; pointer-events:none; }
+.profile-btn img { width:100%; height:100%; object-fit:cover; display:block; }
+.profile-btn svg { display:none; }
+.pd-head {
+            padding:0.85rem 0.95rem 0.7rem;
+            border-bottom:1px solid rgba(255,255,255,0.08);
+            margin-bottom:0.3rem;
+        }
+.pd-label { font-size:0.68rem; font-weight:800; letter-spacing:0.08em; color:#a855f7; text-transform:uppercase; }
+.pd-sub { font-size:0.82rem; color:#a1a1aa; margin-top:0.2rem; }
+a.pd-item, button.pd-item {
+            display:flex !important;
+            align-items:center;
+            gap:0.75rem;
+            width:100%;
+            padding:0.75rem 0.9rem !important;
+            border-radius:10px;
+            color:#e4e4e7 !important;
+            text-decoration:none !important;
+            font-size:0.92rem;
+            font-weight:500;
+            border:none;
+            background:transparent;
+            cursor:pointer;
+            font-family:inherit;
+            text-align:left;
+            box-sizing:border-box;
+        }
+a.pd-item:hover, button.pd-item:hover {
+            background:rgba(168,85,247,0.14) !important;
+            color:#fff !important;
+            text-decoration:none !important;
+        }
+a.pd-item svg, button.pd-item svg {
+            width:20px; height:20px; flex-shrink:0; fill:currentColor; opacity:0.95;
+        }
+button.pd-item.danger { color:#f87171 !important; }
+.navbar, header.nav, nav.navbar, .nav-bar, .top-nav {
+            background: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border-bottom: none !important;
+            box-shadow: none !important;
+            transition: background 0.25s ease, backdrop-filter 0.25s ease !important;
+        }
+.navbar.scrolled, header.nav.scrolled, nav.navbar.scrolled {
+            background: rgba(7, 9, 14, 0.55) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border-bottom: none !important;
+        }
+.nav-left { display:flex; align-items:center; gap:0.75rem; z-index:5; }
+.nav-links, ul.nav-links { display:none !important; visibility:hidden !important; }
+.menu-btn {
+            display:flex !important;
+            flex-direction:column;
+            justify-content:center;
+            align-items:flex-start;
+            gap:6px;
+            width:36px; height:36px;
+            background:transparent !important;
+            border:none !important;
+            cursor:pointer;
+            padding:7px 6px;
+            color:#fff;
+            z-index:5;
+        }
+.menu-btn span {
+            display:block;
+            height:2px;
+            background:#fff;
+            border-radius:10px;
+            transition: transform 0.25s ease, width 0.25s ease, opacity 0.2s;
+        }
+.menu-btn span:nth-child(1) { width:22px; }
+.menu-btn span:nth-child(2) { width:13px; }
+.menu-btn.open span:nth-child(1) {
+            width:22px;
+            transform: translateY(4px) rotate(45deg);
+        }
+.menu-btn.open span:nth-child(2) {
+            width:22px;
+            transform: translateY(-4px) rotate(-45deg);
+        }
+.side-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 190;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.28s ease, visibility 0.28s;
+        }
+.side-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+.side-menu {
+            position: fixed;
+            top: 0; left: 0;
+            width: min(272px, 88vw);
+            height: 100vh;
+            height: 100dvh;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(165deg, rgba(16,16,22,0.97) 0%, rgba(8,8,12,0.98) 100%);
+            backdrop-filter: blur(24px) saturate(1.2);
+            -webkit-backdrop-filter: blur(24px) saturate(1.2);
+            border-right: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 12px 0 48px rgba(0,0,0,0.55);
+            transform: translateX(-105%);
+            transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+            overflow: hidden;
+            padding: 0.7rem 0 0;
+        }
+.side-menu.open { transform: translateX(0); }
+.side-menu-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 0.9rem;
+            margin: 0 0.7rem 0.55rem;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+        }
+.side-menu-brand .sm-logo {
+            width: 36px; height: 36px;
+            border-radius: 11px;
+            background: linear-gradient(145deg, #c084fc, #a855f7 45%, #ec4899);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: #fff;
+            flex-shrink: 0;
+            box-shadow: 0 3px 12px rgba(168,85,247,0.4);
+        }
+.side-menu-brand .sm-text strong {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.01em;
+        }
+.side-menu-brand .sm-text span {
+            font-size: 0.7rem;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+.side-menu-scroll {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.12) transparent;
+        }
+.side-menu-scroll::-webkit-scrollbar { width: 4px; }
+.side-menu-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.12);
+            border-radius: 4px;
+        }
+.side-menu-nav {
+            flex: 0 0 auto;
+            padding: 0.15rem 0.55rem 0.1rem;
+        }
+.side-menu-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.68rem 0.85rem;
+            border-radius: 11px;
+            color: #b4b4be;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background 0.18s ease, color 0.18s ease, transform 0.15s;
+            margin-bottom: 2px;
+            position: relative;
+        }
+.side-menu-nav a:hover {
+            background: rgba(255,255,255,0.055);
+            color: #f4f4f5;
+        }
+.side-menu-nav a.active {
+            background: rgba(255,255,255,0.09);
+            color: #fff;
+            font-weight: 600;
+        }
+.side-menu-nav a.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 22%;
+            bottom: 22%;
+            width: 3px;
+            border-radius: 0 3px 3px 0;
+            background: #a855f7;
+        }
+.side-menu-nav a svg {
+            width: 19px;
+            height: 19px;
+            flex-shrink: 0;
+            opacity: 0.88;
+        }
+.side-menu-nav a.active svg { opacity: 1; }
+.side-menu-nav a svg * {
+            fill: none !important;
+            stroke: currentColor;
+        }
+.side-menu-layout {
+            flex: 0 0 auto;
+            padding: 0.4rem 0.7rem 0.85rem;
+        }
+.sm-layout-card {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.72rem 0.8rem;
+            border-radius: 13px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025));
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: border-color 0.2s, background 0.2s;
+        }
+.sm-layout-card:hover {
+            border-color: rgba(255,255,255,0.12);
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+        }
+.sm-layout-ico {
+            width: 30px; height: 30px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a1a1aa;
+            background: rgba(255,255,255,0.05);
+            flex-shrink: 0;
+        }
+.sm-layout-text {
+            flex: 1;
+            min-width: 0;
+            line-height: 1.3;
+        }
+.sm-layout-text strong {
+            display: block;
+            font-size: 0.83rem;
+            font-weight: 600;
+            color: #f4f4f5;
+        }
+.sm-layout-text span {
+            font-size: 0.68rem;
+            color: #8b8b96;
+        }
+.sm-layout-btn {
+            flex-shrink: 0;
+            padding: 0.32rem 0.75rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(255,255,255,0.06);
+            color: #e4e4e7;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.18s;
+        }
+.sm-layout-btn:hover {
+            border-color: rgba(168,85,247,0.55);
+            background: rgba(168,85,247,0.15);
+            color: #fff;
+        }
+.side-menu-foot {
+            padding: 0.6rem 0.7rem 0.9rem;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            margin-top: auto;
+            flex-shrink: 0;
+            background: rgba(0,0,0,0.15);
+        }
+.side-menu-guest {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0.7rem;
+            border-radius: 13px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.18s, border-color 0.18s;
+        }
+.side-menu-guest:hover {
+            background: rgba(255,255,255,0.07);
+            border-color: rgba(255,255,255,0.1);
+        }
+.side-menu-guest img {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 0 0 2px #0c0c10, 0 0 0 3.5px #a855f7;
+            flex-shrink: 0;
+        }
+.side-menu-guest strong {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #f4f4f5;
+        }
+.side-menu-guest span {
+            font-size: 0.7rem;
+            color: #8b8b96;
+        }
+.navbar { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
+footer .footer-brand .logo {
+            font-size: 1.4rem !important;
+            font-weight: 800 !important;
+            display: inline-block;
+            margin-bottom: 0.7rem !important;
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+.side-menu {
+            width: min(280px, 86vw) !important;
+            background: rgba(12, 12, 16, 0.96) !important;
+            border-right: 1px solid rgba(255,255,255,0.06) !important;
+        }
+.side-menu-brand {
+            margin: 0.65rem 0.75rem 0.5rem !important;
+            padding: 0.65rem 0.8rem !important;
+            border-radius: 14px !important;
+            background: rgba(255,255,255,0.05) !important;
+            border: 1px solid rgba(255,255,255,0.07) !important;
+        }
+.side-menu-brand .sm-logo {
+            width: 34px !important;
+            height: 34px !important;
+            border-radius: 10px !important;
+            background: linear-gradient(145deg, #c084fc, #a855f7) !important;
+            font-size: 1.05rem !important;
+        }
+.side-menu-nav {
+            padding: 0.35rem 0.55rem !important;
+        }
+.side-menu-nav a {
+            gap: 0.9rem !important;
+            padding: 0.72rem 0.9rem !important;
+            border-radius: 12px !important;
+            color: #c4c4cc !important;
+            font-size: 0.92rem !important;
+            font-weight: 500 !important;
+            margin-bottom: 1px !important;
+        }
+.side-menu-nav a:hover {
+            background: rgba(255,255,255,0.06) !important;
+            color: #fff !important;
+        }
+.side-menu-nav a.active {
+            background: rgba(255,255,255,0.08) !important;
+            color: #fff !important;
+        }
+.side-menu-nav a.active::before {
+            background: #a855f7 !important;
+        }
+.side-menu-nav a svg {
+            width: 20px !important;
+            height: 20px !important;
+            opacity: 0.9 !important;
+        }
+.sm-layout-card {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.25rem !important;
+            padding: 0.75rem 0.85rem !important;
+            border-radius: 14px !important;
+            background: rgba(255,255,255,0.05) !important;
+            border: 1px solid rgba(255,255,255,0.08) !important;
+        }
+.sm-layout-btn {
+            margin-left: auto;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #e4e4e7;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            padding: 0.35rem 0.65rem;
+            border-radius: 999px;
+            cursor: pointer;
+        }
+.sm-layout-btn:hover {
+            background: rgba(168,85,247,0.25);
+            border-color: rgba(168,85,247,0.4);
+            color: #fff;
+        }
+.sm-layout-text strong {
+            display: block;
+            font-size: 0.82rem;
+            color: #f4f4f5;
+        }
+.sm-layout-text span {
+            font-size: 0.68rem;
+            color: #9ca3af;
+            line-height: 1.3;
+        }
+.side-menu-foot {
+            padding: 0.65rem 0.75rem 0.9rem !important;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+.side-menu-guest {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.25rem !important;
+            padding: 0.65rem 0.75rem !important;
+            border-radius: 14px !important;
+            background: rgba(255,255,255,0.04) !important;
+            border: 1px solid rgba(255,255,255,0.06) !important;
+            text-decoration: none !important;
+            color: inherit !important;
+        }
+.side-menu-guest:hover {
+            background: rgba(255,255,255,0.07) !important;
+        }
+.sm-guest-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: #fff;
+            flex-shrink: 0;
+        }
+.side-menu-guest span {
+            font-size: 0.72rem;
+            color: #9ca3af;
+        }
+.sm-layout-btn {
+            flex-shrink: 0;
+            border: none;
+            cursor: pointer;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            padding: 0.35rem 0.7rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            color: #e4e4e7;
+            border: 1px solid rgba(255,255,255,0.12);
+            font-family: inherit;
+        }
+.sm-layout-btn:hover, .sm-layout-btn.active {
+            background: rgba(168,85,247,0.35);
+            border-color: rgba(168,85,247,0.5);
+            color: #fff;
+        }
+.sm-layout-card { cursor: pointer; }
+body.menu-open, body.search-open { overflow: hidden; }
+
+
+
+/* === EXACT home navbar match === */
+:root {
+  --grad: linear-gradient(90deg, #a855f7, #ec4899);
+  --muted: #a1a1aa;
+}
+.navbar, nav.navbar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 100 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0.45rem 2.5% !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: none !important;
+  min-height: auto !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  transition: background 0.35s ease, backdrop-filter 0.35s ease !important;
+}
+.navbar.scrolled {
+  background: rgba(7, 9, 14, 0.72) !important;
+  backdrop-filter: blur(16px) saturate(1.2) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.2) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+}
+.navbar .nav-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.25rem !important;
+}
+.navbar .logo {
+  font-family: 'Orbitron', system-ui, sans-serif !important;
+  font-size: 1.4rem !important;
+  font-weight: 800 !important;
+  background: var(--grad) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  text-decoration: none !important;
+  line-height: 1 !important;
+}
+.navbar .menu-btn {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  gap: 6px !important;
+  width: 36px !important;
+  height: 36px !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  padding: 7px 6px !important;
+  color: #fff !important;
+  z-index: 5 !important;
+}
+.navbar .menu-btn span {
+  display: block !important;
+  width: 20px !important;
+  height: 2px !important;
+  background: #fff !important;
+  border-radius: 1px !important;
+  transition: transform 0.25s ease, opacity 0.2s !important;
+}
+.navbar .menu-btn.open span:nth-child(1) {
+  transform: translateY(4px) rotate(45deg) !important;
+}
+.navbar .menu-btn.open span:nth-child(2) {
+  transform: translateY(-4px) rotate(-45deg) !important;
+}
+.navbar .nav-right {
+  display: flex !important;
+  align-items: center !important;
+}
+.navbar .nav-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.navbar .search-toggle {
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  color: #fff !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+.navbar .search-toggle svg {
+  width: 22px !important;
+  height: 22px !important;
+  stroke: #fff !important;
+  fill: none !important;
+  stroke-width: 2 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+.navbar .search-toggle:hover { opacity: 0.85 !important; }
+.navbar .profile-btn {
+  width: 27px !important;
+  height: 27px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  border: none !important;
+  padding: 0 !important;
+  display: block !important;
+  background: #1a1a24 !important;
+  box-shadow: 0 0 0 2px #000, 0 0 0 4px #ef4444 !important;
+  cursor: pointer !important;
+}
+.navbar .profile-btn img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+.navbar .nav-links { display: none !important; }
+/* content offset under fixed navbar */
+main.page, .page {
+  padding-top: 64px !important;
+}
+
+/* Menu lines: long + short (home exact) */
+.navbar .menu-btn span {
+  height: 2px !important;
+  background: #fff !important;
+  border-radius: 10px !important;
+  transition: transform 0.25s ease, width 0.25s ease, opacity 0.2s !important;
+}
+.navbar .menu-btn span:nth-child(1) { width: 22px !important; }
+.navbar .menu-btn span:nth-child(2) { width: 13px !important; }
+.navbar .menu-btn.open span:nth-child(1) {
+  width: 22px !important;
+  transform: translateY(4px) rotate(45deg) !important;
+}
+.navbar .menu-btn.open span:nth-child(2) {
+  width: 22px !important;
+  transform: translateY(-4px) rotate(-45deg) !important;
+}
+
+/* Profile glass dropdown (home exact) */
+.profile-wrap { position: relative !important; z-index: 250 !important; }
+.navbar .profile-btn {
+  width: 27px !important;
+  height: 27px !important;
+  border-radius: 50% !important;
+  border: none !important;
+  background: #1a1a24 !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  box-shadow: 0 0 0 2px #000, 0 0 0 4px #ef4444 !important;
+  transition: transform 0.2s, opacity 0.2s !important;
+}
+.navbar .profile-btn:hover { transform: scale(0.97); opacity: 0.9; }
+.navbar .profile-btn img { width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important; }
+
+.profile-dd {
+  display: none !important;
+  position: absolute !important;
+  right: 0 !important;
+  top: calc(100% + 10px) !important;
+  width: 240px !important;
+  background: rgba(18, 18, 26, 0.88) !important;
+  backdrop-filter: blur(20px) saturate(1.3) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.3) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 16px !important;
+  padding: 0.4rem !important;
+  z-index: 300 !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.65) !important;
+  flex-direction: column !important;
+}
+.profile-dd.open { display: flex !important; }
+.pd-head {
+  padding: 0.85rem 0.95rem 0.7rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 0.3rem;
+}
+.pd-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #a855f7;
+  text-transform: uppercase;
+}
+.pd-sub { font-size: 0.82rem; color: #e4e4e7; margin-top: 0.2rem; }
+.pd-item {
+  display: flex !important;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  color: #e4e4e7 !important;
+  text-decoration: none !important;
+  font-size: 0.88rem;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+}
+.pd-item:hover { background: rgba(255,255,255,0.06); }
+.pd-item svg { flex-shrink: 0; opacity: 0.9; }
+.pd-item.danger { color: #f87171 !important; }
+
+
+/* Logo EXACT home match */
+.navbar .logo,
+nav.navbar .logo,
+a.logo {
+  font-family: 'Orbitron', sans-serif !important;
+  font-size: 1.4rem !important;
+  font-weight: 800 !important;
+  letter-spacing: normal !important;
+  line-height: 1 !important;
+  background: linear-gradient(90deg, #a855f7, #ec4899) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+
+/* Navbar slightly higher */
+.navbar, nav.navbar {
+  padding-top: 0.4rem !important;
+  padding-bottom: 0.4rem !important;
+  padding-left: 0.35rem !important;
+  top: 0 !important;
+}
+main.page, .page {
+  padding-top: 52px !important;
+}
+
+
+/* Navbar left shift */
+.navbar, nav.navbar {
+  padding-left: 0.35rem !important;
+  padding-right: 2.5% !important;
+}
+.navbar .nav-left {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+  gap: 0.25rem !important;
+}
+.navbar .menu-btn {
+  padding-left: 4px !important;
+  margin-left: 0 !important;
+}
+
+
+/* Logo closer to menu */
+.navbar .nav-left {
+  gap: 0.25rem !important;
+}
+.navbar .logo {
+  margin-left: 0 !important;
+}
+.navbar .menu-btn {
+  margin-right: 0 !important;
+}
+
+</style>
+
+
+<style id="index-chrome-copy">
+/* NAVBAR — exact index */
+.navbar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 100 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0.4rem 2.5% 0.4rem 0.35rem !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: none !important;
+  transition: background 0.3s ease-in-out, backdrop-filter 0.3s ease-in-out, transform 0.3s ease-in-out !important;
+  transform: translateY(0) !important;
+}
+.navbar.scrolled {
+  background: rgba(7, 9, 14, 0.55) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+.navbar.nav-hidden {
+  transform: translateY(-100%) !important;
+  pointer-events: none !important;
+}
+.navbar .nav-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.25rem !important;
+}
+.navbar .logo {
+  font-family: 'Orbitron', sans-serif !important;
+  font-size: 1.4rem !important;
+  font-weight: 800 !important;
+  background: linear-gradient(90deg, #a855f7, #ec4899) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  text-decoration: none !important;
+}
+.navbar .menu-btn {
+  width: 40px !important;
+  height: 36px !important;
+  background: none !important;
+  border: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  cursor: pointer !important;
+  padding: 0 4px !important;
+}
+.navbar .menu-btn span {
+  display: block !important;
+  height: 2px !important;
+  background: #fff !important;
+  border-radius: 10px !important;
+}
+.navbar .menu-btn span:nth-child(1) { width: 22px !important; }
+.navbar .menu-btn span:nth-child(2) { width: 13px !important; }
+.navbar .nav-right, .navbar .nav-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+}
+.navbar .search-toggle {
+  width: 36px !important;
+  height: 36px !important;
+  background: transparent !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+}
+.navbar .search-toggle svg {
+  width: 22px !important;
+  height: 22px !important;
+  stroke: #fff !important;
+  fill: none !important;
+  stroke-width: 2 !important;
+}
+.navbar .profile-btn {
+  width: 27px !important;
+  height: 27px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  border: none !important;
+  padding: 0 !important;
+  background: #1a1a24 !important;
+  box-shadow: 0 0 0 2px #000, 0 0 0 4px #ef4444 !important;
+  cursor: pointer !important;
+}
+.navbar .profile-btn img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+.navbar .nav-links { display: none !important; }
+
+/* BOTTOM NAV — exact index computed */
+#bottomNav,
+nav.bottom-nav,
+.bottom-nav {
+  display: none;
+  position: fixed !important;
+  left: 12px !important;
+  right: 12px !important;
+  bottom: max(8px, env(safe-area-inset-bottom, 0px)) !important;
+  width: auto !important;
+  height: 52px !important;
+  z-index: 500 !important;
+  background: rgba(8, 8, 10, 0.4) !important;
+  backdrop-filter: blur(40px) saturate(1.8) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(1.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 28px !important;
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.45) !important;
+  padding: 0 6px 2px !important;
+  margin: 0 !important;
+  flex-direction: row !important;
+  align-items: flex-end !important;
+  justify-content: space-around !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+}
+@media (max-width: 900px) {
+  #bottomNav, nav.bottom-nav, .bottom-nav {
+    display: flex !important;
+  }
+  body {
+    padding-bottom: 78px !important;
+  }
+}
+@media (min-width: 901px) {
+  #bottomNav, nav.bottom-nav, .bottom-nav {
+    display: none !important;
+  }
+  .explore-sheet-overlay, .explore-sheet {
+    display: none !important;
+  }
+}
+
+#bottomNav .bn-item,
+.bottom-nav .bn-item {
+  flex: 1 1 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 2px !important;
+  background: transparent !important;
+  border: none !important;
+  color: #8e8e96 !important;
+  text-decoration: none !important;
+  font-size: 0.68rem !important;
+  font-weight: 500 !important;
+  padding: 0 0 6px !important;
+  margin: 0 !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  position: relative !important;
+  top: 0 !important;
+}
+#bottomNav .bn-item svg {
+  width: 22px !important;
+  height: 22px !important;
+  stroke: currentColor !important;
+  fill: none !important;
+  stroke-width: 1.75 !important;
+}
+#bottomNav .bn-item > span:not(.bn-center-btn):not(.bn-avatar-wrap) {
+  display: block !important;
+  font-size: 0.68rem !important;
+  font-weight: 500 !important;
+  color: #8e8e96 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+#bottomNav .bn-item.active {
+  color: #fff !important;
+}
+#bottomNav .bn-item.active svg {
+  stroke: #fff !important;
+}
+
+/* Center A logo */
+#bottomNav a.bn-item.bn-center,
+#bottomNav .bn-item.bn-center {
+  background: transparent !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+  top: 0 !important;
+  width: auto !important;
+  flex: 1 1 0 !important;
+  margin: 0 2px !important;
+  padding: 0 0 2px !important;
+}
+#bottomNav .bn-center-btn {
+  display: block !important;
+  position: absolute !important;
+  top: -22px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 56px !important;
+  height: 56px !important;
+  margin: 2px 0 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  overflow: hidden !important;
+  z-index: 5 !important;
+}
+#bottomNav .bn-center-btn svg,
+#bottomNav .bn-center-btn .bn-logo {
+  display: block !important;
+  width: 54px !important;
+  height: 54px !important;
+  filter: drop-shadow(0 2px 8px rgba(168, 85, 247, 0.4)) !important;
+}
+#bottomNav .bn-item.bn-center > span:not(.bn-center-btn) {
+  display: none !important;
+}
+#bottomNav .bn-avatar-wrap {
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  border: 1.5px solid rgba(255,255,255,0.2) !important;
+}
+#bottomNav .bn-avatar {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* Explore sheet */
+.explore-sheet-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 600 !important;
+  background: rgba(0,0,0,0.5) !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: opacity 0.25s, visibility 0.25s !important;
+}
+.explore-sheet-overlay.open {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+.explore-sheet {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 610 !important;
+  max-height: 85vh !important;
+  background: rgba(12, 12, 16, 0.96) !important;
+  backdrop-filter: blur(24px) !important;
+  border-radius: 20px 20px 0 0 !important;
+  transform: translateY(105%) !important;
+  transition: transform 0.3s cubic-bezier(0.22,1,0.36,1) !important;
+  overflow: auto !important;
+  padding: 0.5rem 1rem 1.5rem !important;
+}
+.explore-sheet.open {
+  transform: translateY(0) !important;
+}
+
+main.page, .page {
+  padding-top: 64px !important;
+}
+</style>
+
+<style id="side-menu-force">
+/* Aniflix EXACT desktop menu background + layout */
+.side-menu, aside.side-menu, #sideMenu,
+aside#sideMenu.side-menu {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: auto !important;
+  bottom: 0 !important;
+  width: 280px !important;
+  max-width: 85vw !important;
+  height: 100% !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  min-height: 100% !important;
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  max-height: 100% !important;
+  max-height: 100vh !important;
+  max-height: 100dvh !important;
+  z-index: 99999 !important;
+  /* Aniflix panel: rgba(8,8,10,0.4) + blur(40px) saturate(1.8) */
+  background: rgba(8, 8, 10, 0.4) !important;
+  background-color: rgba(8, 8, 10, 0.4) !important;
+  background-image: none !important;
+  backdrop-filter: blur(40px) saturate(1.8) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(1.8) !important;
+  transform: translateX(-100%) !important;
+  transition: transform 0.28s cubic-bezier(0.22,1,0.36,1) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  border: 0 solid transparent !important;
+  border-right: 0 solid transparent !important;
+  border-radius: 0 !important;
+  box-shadow: 28px 0 80px rgba(0, 0, 0, 0.45) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+.side-menu.open, aside.side-menu.open, #sideMenu.open,
+aside#sideMenu.side-menu.open {
+  transform: translateX(0) !important;
+  z-index: 99999 !important;
+  height: 100% !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  max-height: 100dvh !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  background: rgba(8, 8, 10, 0.4) !important;
+  background-color: rgba(8, 8, 10, 0.4) !important;
+  backdrop-filter: blur(40px) saturate(1.8) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(1.8) !important;
+  box-shadow: 28px 0 80px rgba(0, 0, 0, 0.45) !important;
+}
+/* Aniflix backdrop: rgba(0,0,0,0.29) */
+.side-overlay, #sideOverlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 99998 !important;
+  background: rgba(0, 0, 0, 0.29) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: opacity 0.25s, visibility 0.25s !important;
+}
+.side-overlay.open, #sideOverlay.open {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  z-index: 99998 !important;
+  background: rgba(0, 0, 0, 0.29) !important;
+}
+.side-menu-scroll,
+aside#sideMenu .side-menu-scroll,
+#sideMenu .side-menu-scroll {
+  flex: 1 1 0% !important;
+  overflow-y: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0.75rem 0 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+.side-menu-nav {
+  justify-content: flex-start !important;
+  flex: 0 0 auto !important;
+  background: transparent !important;
+}
+.side-menu-layout {
+  flex: 0 0 auto !important;
+  margin-top: 0.35rem !important;
+  background: transparent !important;
+}
+/* Logo/brand card — same background as Guest */
+.side-menu-brand,
+aside#sideMenu .side-menu-brand,
+#sideMenu .side-menu-brand {
+  background: rgba(255, 255, 255, 0.04) !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  background-image: none !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+  box-shadow: none !important;
+  padding: 0.65rem 0.85rem !important;
+  margin: 0.65rem 0.75rem 0.75rem !important;
+}
+/* nav items — transparent like Aniflix (not solid panel fill) */
+.side-menu-nav a,
+aside#sideMenu .side-menu-nav a {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+.side-menu-nav a:hover,
+aside#sideMenu .side-menu-nav a:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+.side-menu-nav a.active,
+aside#sideMenu .side-menu-nav a.active {
+  background: rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+.side-menu-foot,
+aside#sideMenu .side-menu-foot,
+#sideMenu .side-menu-foot {
+  flex: 0 0 auto !important;
+  margin-top: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  border-top: none !important;
+}
+/* Guest card — same UI as logo/brand card */
+.side-menu-foot,
+aside#sideMenu .side-menu-foot,
+#sideMenu .side-menu-foot {
+  padding: 0.55rem 0.75rem 0.9rem !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-top: none !important;
+}
+.side-menu-guest,
+aside#sideMenu .side-menu-guest,
+#sideMenu .side-menu-guest,
+a.side-menu-guest {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0.65rem 0.85rem !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  background-image: none !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  color: inherit !important;
+  box-sizing: border-box !important;
+}
+.side-menu-guest:hover,
+aside#sideMenu .side-menu-guest:hover,
+a.side-menu-guest:hover {
+  background: rgba(255, 255, 255, 0.07) !important;
+  background-color: rgba(255, 255, 255, 0.07) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+.side-menu-guest img,
+aside#sideMenu .side-menu-guest img,
+a.side-menu-guest img {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 12px !important;
+  object-fit: cover !important;
+  flex-shrink: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: #000 !important;
+  padding: 0 !important;
+}
+.side-menu-guest strong,
+aside#sideMenu .side-menu-guest strong {
+  display: block !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1.25 !important;
+}
+.side-menu-guest span,
+aside#sideMenu .side-menu-guest span {
+  display: block !important;
+  font-size: 0.7rem !important;
+  font-weight: 500 !important;
+  color: #9ca3af !important;
+  line-height: 1.3 !important;
+}
+</style>
+<style id="guest-bottom-final">
+/* Aniflix exact: full height + Guest at bottom */
+aside#sideMenu,
+aside#sideMenu.open,
+#sideMenu,
+#sideMenu.open,
+.side-menu,
+.side-menu.open {
+  position: fixed !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  height: 100% !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  min-height: 100% !important;
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  max-height: 100% !important;
+  max-height: 100vh !important;
+  max-height: 100dvh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+aside#sideMenu .side-menu-scroll,
+#sideMenu .side-menu-scroll,
+.side-menu .side-menu-scroll {
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+}
+aside#sideMenu .side-menu-foot,
+#sideMenu .side-menu-foot,
+.side-menu .side-menu-foot {
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex-shrink: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-top: none !important;
+}
+/* Guest card — same as logo/brand (final) */
+aside#sideMenu .side-menu-foot,
+#sideMenu .side-menu-foot,
+.side-menu .side-menu-foot {
+  padding: 0.55rem 0.75rem 0.9rem !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-top: none !important;
+}
+aside#sideMenu .side-menu-guest,
+#sideMenu .side-menu-guest,
+.side-menu .side-menu-guest,
+a.side-menu-guest {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0.65rem 0.85rem !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  background-image: none !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  color: inherit !important;
+  box-sizing: border-box !important;
+}
+aside#sideMenu .side-menu-guest:hover,
+#sideMenu .side-menu-guest:hover,
+a.side-menu-guest:hover {
+  background: rgba(255, 255, 255, 0.07) !important;
+  background-color: rgba(255, 255, 255, 0.07) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+aside#sideMenu .side-menu-guest img,
+#sideMenu .side-menu-guest img,
+a.side-menu-guest img {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 12px !important;
+  object-fit: cover !important;
+  flex-shrink: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: #000 !important;
+}
+aside#sideMenu .side-menu-guest strong,
+#sideMenu .side-menu-guest strong {
+  display: block !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+  letter-spacing: -0.01em !important;
+}
+aside#sideMenu .side-menu-guest span,
+#sideMenu .side-menu-guest span {
+  display: block !important;
+  font-size: 0.7rem !important;
+  font-weight: 500 !important;
+  color: #9ca3af !important;
+}
+
+
+/* Menu AnimeFan text = navbar logo style */
+.side-menu-brand .sm-text strong,
+aside#sideMenu .side-menu-brand .sm-text strong,
+#sideMenu .side-menu-brand .sm-text strong {
+  display: block !important;
+  font-family: 'Orbitron', sans-serif !important;
+  font-size: 1.28rem !important;
+  font-weight: 800 !important;
+  background: linear-gradient(90deg, #a855f7, #ec4899) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+  letter-spacing: -0.01em !important;
+}
+
+
+
+
+
+
+
+/* AnimeFan on top, Platform below */
+.side-menu-brand .sm-text,
+aside#sideMenu .side-menu-brand .sm-text,
+#sideMenu .side-menu-brand .sm-text {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  gap: 0.08rem !important;
+  margin-top: 0 !important;
+}
+.side-menu-brand .sm-text strong,
+aside#sideMenu .side-menu-brand .sm-text strong,
+#sideMenu .side-menu-brand .sm-text strong {
+  order: 0 !important;
+  display: block !important;
+  font-family: 'Orbitron', sans-serif !important;
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+  line-height: 1.15 !important;
+  margin: 0 !important;
+  position: relative !important;
+  top: 4px !important;
+  background: linear-gradient(90deg, #a855f7, #ec4899) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+.side-menu-brand .sm-text span,
+aside#sideMenu .side-menu-brand .sm-text span,
+#sideMenu .side-menu-brand .sm-text span {
+  order: 1 !important;
+  display: block !important;
+  font-size: 0.68rem !important;
+  font-weight: 500 !important;
+  color: #9ca3af !important;
+  line-height: 1.15 !important;
+  margin: 0.15rem 0 0 0 !important;
+  position: relative !important;
+  top: 2px !important;
+}
+/* Logo brand = same bg as Guest */
+aside#sideMenu .side-menu-brand,
+#sideMenu .side-menu-brand,
+.side-menu .side-menu-brand {
+  background: rgba(255, 255, 255, 0.04) !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  background-image: none !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+  box-shadow: none !important;
+  padding: 0.65rem 0.85rem !important;
+  margin: 0.65rem 0.75rem 0.75rem !important;
+}
+</style>
+</head>
+<body>
+<nav class="navbar hide-inline-search">
+        <div class="nav-left">
+            <button type="button" class="menu-btn" id="menuBtn" aria-label="Open menu" onclick="window.__toggleSideMenu(event)">
+                <span></span><span></span>
+            </button>
+            <a href="index.html" class="logo">AnimeFan</a>
+        </div>
+        <ul class="nav-links" style="display:none!important" hidden>
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="anime.html">Anime</a></li>
+            <li><a href="schedule.html">Schedule</a></li>
+            <li class="nav-dropdown" id="genresDrop">
+                <button type="button" class="nav-drop-btn" id="genresBtn">Genres ▾</button>
+                <div class="nav-drop-menu" id="genresMenu">
+                    <a href="genre.html?g=Action">Action</a>
+                    <a href="genre.html?g=Adventure">Adventure</a>
+                    <a href="genre.html?g=Comedy">Comedy</a>
+                    <a href="genre.html?g=Drama">Drama</a>
+                    <a href="genre.html?g=Fantasy">Fantasy</a>
+                    <a href="genre.html?g=Horror">Horror</a>
+                    <a href="genre.html?g=Isekai">Isekai</a>
+                    <a href="genre.html?g=Mecha">Mecha</a>
+                    <a href="genre.html?g=Mystery">Mystery</a>
+                    <a href="genre.html?g=Romance">Romance</a>
+                    <a href="genre.html?g=Sci-Fi">Sci-Fi</a>
+                    <a href="genre.html?g=Seinen">Seinen</a>
+                    <a href="genre.html?g=Shonen">Shonen</a>
+                    <a href="genre.html?g=Slice of Life">Slice of Life</a>
+                    <a href="genre.html?g=Sports">Sports</a>
+                    <a href="genre.html?g=Thriller">Thriller</a>
+                </div>
+            </li>
+            <li><a href="request.html">Request</a></li>
+        </ul>
+        
+        <div class="nav-right">
+            <div class="nav-actions">
+            <button type="button" class="search-toggle" id="searchToggle" aria-label="Search">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            </button>
+            <div class="profile-wrap">
+                <button type="button" class="profile-btn" id="profileBtn" aria-label="Profile">
+                    <img src="https://iili.io/fiPveqJ.md.jpg" alt="Profile" width="36" height="36">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v1.2h19.2v-1.2c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                </button>
+                
+                
+                <div class="profile-dd" id="profileDd">
+                    <div class="pd-head">
+                        <div class="pd-label" id="pdLabel">GUEST</div>
+                        <div class="pd-sub" id="pdSub">Not signed in</div>
+                    </div>
+                    <a class="pd-item" id="pdSignIn" href="login.html">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        Sign in
+                    </a>
+                    <a class="pd-item" id="pdHistory" href="continue.html">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                        History
+                    </a>
+                    <a class="pd-item" id="pdList" href="mylist.html">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        My List
+                    </a>
+                    <a class="pd-item" href="help.html">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        Help &amp; Feedback
+                    </a>
+                    <button type="button" class="pd-item danger" id="pdLogout" style="display:none;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        Sign out
+                    </button>
+                </div>
+
+            </div>
+            </div><!-- /nav-actions -->
+            
+        </div>
+
+    </nav>
+
+<div class="search-overlay" id="searchOverlay">
+      <div class="search-overlay-panel">
+        <div class="search-overlay-bar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input type="text" id="searchInput" placeholder="Search anime..." autocomplete="off">
+        </div>
+        <div class="search-recent" id="searchRecent"></div>
+        <div class="search-results" id="searchResults"></div>
+    
+      </div>
+    </div>
+
+<div class="side-overlay" id="sideOverlay"></div>
+    <aside class="side-menu" id="sideMenu" style="background:rgba(8,8,10,0.4)!important;backdrop-filter:blur(40px) saturate(1.8)!important;-webkit-backdrop-filter:blur(40px) saturate(1.8)!important;box-shadow:28px 0 80px rgba(0,0,0,0.45)!important;border:none!important;border-radius:0!important;">
+        <div class="side-menu-brand">
+            <div class="sm-logo" aria-label="AnimeFan" >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 712 712" style="width:36px;height:36px;display:block;" role="img" aria-label="AnimeFan">
+  <defs>
+    <linearGradient id="top__AF" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b52cff"/>
+      <stop offset="0.48" stop-color="#f02af4"/>
+      <stop offset="1" stop-color="#ff00c8"/>
+    </linearGradient>
+    <linearGradient id="left__AF" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#1800ff"/>
+      <stop offset="0.55" stop-color="#8225ff"/>
+      <stop offset="1" stop-color="#df48f5"/>
+    </linearGradient>
+    <linearGradient id="swoosh__AF" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#1700f9"/>
+      <stop offset="0.42" stop-color="#a600ff"/>
+      <stop offset="0.76" stop-color="#ff20d9"/>
+      <stop offset="1" stop-color="#ff149e"/>
+    </linearGradient>
+    <linearGradient id="right__AF" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fa18b9"/>
+      <stop offset="0.55" stop-color="#f72bb7"/>
+      <stop offset="1" stop-color="#ff39b5"/>
+    </linearGradient>
+  </defs>
+  <path d="M366 40 L514 327 L389 381 L275 208 Z" fill="url(#top__AF)"/>
+  <path d="M275 208 L431 292 L475 347 L389 381 Z" fill="#9c12f5" opacity="0.38"/>
+  <path d="M260 234 L330 341 L251 464 L26 675 Z" fill="url(#left__AF)"/>
+  <path d="M260 234 L330 341 L251 464 L207 507 L286 365 Z" fill="#c13df5" opacity="0.23"/>
+  <path d="M26 675 L251 464 L697 270 L474 438 Z" fill="url(#swoosh__AF)"/>
+  <path d="M26 675 L251 464 L431 388 L474 438 Z" fill="#7100ff" opacity="0.28"/>
+  <path d="M547 397 L691 675 L462 550 L420 476 Z" fill="url(#right__AF)"/>
+  <path d="M547 397 L691 675 L531 511 L462 550 L420 476 Z" fill="#ff4ac6" opacity="0.28"/>
+</svg>
+            </div>
+            <div class="sm-text">
+                <strong>AnimeFan</strong>
+                <span>Platform</span>
+            </div>
+        </div>
+        <div class="side-menu-scroll">
+        <nav class="side-menu-nav">
+            <a href="index.html" class="active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg>
+                <span>Home</span>
+            </a>
+            <a href="anime.html">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+                <span>Browse Anime</span>
+            </a>
+            <a href="trending.html">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17l5-5 4 4 5-7"/><path d="M15 9h4v4"/></svg>
+                <span>Trending</span>
+            </a>
+            <a href="popular.html">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                <span>Popular</span>
+            </a>
+            <a href="schedule.html">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+                <span>Schedule</span>
+            </a>
+            <a href="anime.html?sort=random">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+                <span>Random</span>
+            </a>
+            <a href="request.html">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                <span>Request</span>
+            </a>
+            <a href="history.html">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                <span>History</span>
+            </a>
+            <div class="side-menu-layout">
+                <div class="sm-layout-card" id="homeLayoutCard">
+                    <div class="sm-layout-ico">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                    </div>
+                    <div class="sm-layout-text">
+                        <strong>Home Layout</strong>
+                        <span>Default and custom<br>order controls</span>
+                    </div>
+                    <button type="button" class="sm-layout-btn" id="homeLayoutBtn" onclick="window.__openHomeLayout&&window.__openHomeLayout(event)">OPEN</button>
+                </div>
+            </div>
+        </nav>
+        </div>
+        <div class="side-menu-foot">
+            <a class="side-menu-guest" href="login.html">
+                <img src="https://iili.io/fiPveqJ.md.jpg" alt="Guest" width="40" height="40">
+                <div>
+                    <strong>Guest</strong>
+                    <span>Not signed in</span>
+                </div>
+            </a>
+        </div>
+</aside>
+
+<main class="page">
+  <div class="page-header">
+    <h1>Browse Anime</h1>
+    <p><span id="totalCount">0</span> anime available</p>
+  </div>
+
+  <div class="tools-row">
+    <div class="search-inline">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input type="text" id="pageSearch" placeholder="Search anime..." autocomplete="off">
+    </div>
+    <button type="button" class="filters-btn" id="filtersToggle">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+      Filters
+    </button>
+  </div>
+
+  <div class="filter-panel" id="filterPanel" hidden>
+    <div class="filter-row">
+      <span class="filter-label">Language</span>
+      <div class="chip-row" id="langChips">
+        <button type="button" class="chip active" data-lang="all">All</button>
+        <button type="button" class="chip" data-lang="Hindi">Hindi</button>
+        <button type="button" class="chip" data-lang="Hindi Sub">Hindi Sub</button>
+        <button type="button" class="chip" data-lang="FanDub">Fan Dub</button>
+      </div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Genres</span>
+      <div class="chip-row" id="genreChips">
+        <button type="button" class="chip active" data-genre="all">All</button>
+        <button type="button" class="chip" data-genre="Action">Action</button>
+        <button type="button" class="chip" data-genre="Adventure">Adventure</button>
+        <button type="button" class="chip" data-genre="Comedy">Comedy</button>
+        <button type="button" class="chip" data-genre="Drama">Drama</button>
+        <button type="button" class="chip" data-genre="Fantasy">Fantasy</button>
+        <button type="button" class="chip" data-genre="Horror">Horror</button>
+        <button type="button" class="chip" data-genre="Isekai">Isekai</button>
+        <button type="button" class="chip" data-genre="Mecha">Mecha</button>
+        <button type="button" class="chip" data-genre="Mystery">Mystery</button>
+        <button type="button" class="chip" data-genre="Romance">Romance</button>
+        <button type="button" class="chip" data-genre="Sci-Fi">Sci-Fi</button>
+        <button type="button" class="chip" data-genre="Seinen">Seinen</button>
+        <button type="button" class="chip" data-genre="Shonen">Shonen</button>
+        <button type="button" class="chip" data-genre="Slice of Life">Slice of Life</button>
+        <button type="button" class="chip" data-genre="Sports">Sports</button>
+        <button type="button" class="chip" data-genre="Thriller">Thriller</button>
+      </div>
+    </div>
+    <div class="fields-grid">
+      <div class="field">
+        <label>Type</label>
+        <select id="typeSelect">
+          <option value="all">All types</option>
+          <option value="TV">TV</option>
+          <option value="Movie">Movie</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Status</label>
+        <select id="statusSelect">
+          <option value="all">Any status</option>
+          <option value="Ongoing">Ongoing</option>
+          <option value="Completed">Completed</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Year</label>
+        <select id="yearSelect">
+          <option value="all">Any year</option>
+          <option value="2026">2026</option>
+          <option value="2025">2025</option>
+          <option value="2023">2023</option>
+          <option value="older">2022 & older</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Sort by</label>
+        <select id="sortSelect">
+          <option value="popular">Most popular</option>
+          <option value="rating">Top rated</option>
+          <option value="title">A–Z</option>
+          <option value="new">Newest</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-meta" id="resultsMeta">Loading…</div>
+  <div class="grid" id="grid"></div>
+  <div class="pager" id="pager"></div>
+</main>
+
+<footer>© 2026 AnimeFan — Watch anime in Hindi, Sub & FanDub</footer>
+
+<!-- Mobile bottom nav — Aniflix size -->
+<nav class="bottom-nav" id="bottomNav" aria-label="Mobile navigation">
+  <button type="button" class="bn-item" id="bnMenuBtn" aria-label="Menu" onclick="window.__toggleExplore&&window.__toggleExplore(event)">
+    <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
+    <span>Menu</span>
+  </button>
+  <a class="bn-item" href="schedule.html" data-bn="schedule">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+    <span>Schedule</span>
+  </a>
+  <a class="bn-item bn-center" href="index.html" data-bn="home" aria-label="Home">
+    <span class="bn-center-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 712 712" class="bn-logo" aria-hidden="true" style="overflow:visible">
+  <defs>
+    <linearGradient id="bnTop" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b52cff"/><stop offset="0.48" stop-color="#f02af4"/><stop offset="1" stop-color="#ff00c8"/>
+    </linearGradient>
+    <linearGradient id="bnLeft" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#1800ff"/><stop offset="0.55" stop-color="#8225ff"/><stop offset="1" stop-color="#df48f5"/>
+    </linearGradient>
+    <linearGradient id="bnSwoosh" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#1700f9"/><stop offset="0.42" stop-color="#a600ff"/><stop offset="0.76" stop-color="#ff20d9"/><stop offset="1" stop-color="#ff149e"/>
+    </linearGradient>
+    <linearGradient id="bnRight" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fa18b9"/><stop offset="0.55" stop-color="#f72bb7"/><stop offset="1" stop-color="#ff39b5"/>
+    </linearGradient>
+  </defs>
+  <path d="M366 40 L514 327 L389 381 L275 208 Z" fill="url(#bnTop)"/>
+  <path d="M275 208 L431 292 L475 347 L389 381 Z" fill="#9c12f5" opacity="0.38"/>
+  <path d="M260 234 L330 341 L251 464 L26 675 Z" fill="url(#bnLeft)"/>
+  <path d="M260 234 L330 341 L251 464 L207 507 L286 365 Z" fill="#c13df5" opacity="0.23"/>
+  <path d="M26 675 L251 464 L697 270 L474 438 Z" fill="url(#bnSwoosh)"/>
+  <path d="M26 675 L251 464 L431 388 L474 438 Z" fill="#7100ff" opacity="0.28"/>
+  <path d="M547 397 L691 675 L462 550 L420 476 Z" fill="url(#bnRight)"/>
+  <path d="M547 397 L691 675 L531 511 L462 550 L420 476 Z" fill="#ff4ac6" opacity="0.28"/>
+</svg></span>
+    <span class="bn-center-label">Home</span>
+  </a>
+    <a class="bn-item" href="mylist.html" data-bn="list">
+    <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <span>My List</span>
+  </a>
+  <a class="bn-item" href="login.html" data-bn="profile" id="bnProfile">
+    <span class="bn-avatar-wrap"><img class="bn-avatar" src="https://iili.io/fiPveqJ.md.jpg" alt="" width="24" height="24"></span>
+    <span>Profile</span>
+  </a>
+</nav>
+
+<!-- EXPLORE MENU -->
+<div class="explore-sheet-overlay" id="exploreOverlay" onclick="window.__closeExplore&&window.__closeExplore()"></div>
+<div class="explore-sheet" id="exploreSheet" role="dialog" aria-label="Explore">
+  <div class="explore-handle"></div>
+  <div class="explore-body">
+    <h2 class="explore-title">Explore AnimeFan</h2>
+    <p class="explore-sub">Quick access to everything you need.</p>
+    <div class="explore-grid">
+      <a class="explore-tile" href="#" onclick="event.preventDefault();window.__closeExplore&&window.__closeExplore();document.getElementById('searchBtn')&&document.getElementById('searchBtn').click();return false;">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        Search
+      </a>
+      <a class="explore-tile" href="index.html">
+        <svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 10v10h14V10"/></svg>
+        Home
+      </a>
+      <a class="explore-tile" href="#" id="exploreLayout" onclick="event.preventDefault();window.__closeExplore&&window.__closeExplore();setTimeout(function(){if(window.__openHomeLayout)window.__openHomeLayout();else{var b=document.getElementById('homeLayoutBtn');if(b)b.click();}},150);return false;">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Home Layout
+      </a>
+      <a class="explore-tile" href="trending.html">
+        <svg viewBox="0 0 24 24"><path d="M5 17l5-5 4 4 5-7"/><path d="M15 9h4v4"/></svg>
+        Trending
+      </a>
+      <a class="explore-tile" href="popular.html">
+        <svg viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+        Popular
+      </a>
+      <a class="explore-tile" href="schedule.html">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        Schedule
+      </a>
+      <a class="explore-tile" href="anime.html?sort=random">
+        <svg viewBox="0 0 24 24"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+        Random
+      </a>
+      <a class="explore-tile" href="request.html">
+        <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        Request
+      </a>
+      <a class="explore-tile" href="continue.html">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        History
+      </a>
+      <a class="explore-tile" href="https://t.me/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+        Telegram
+      </a>
+      <a class="explore-tile" href="login.html">
+        <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+        Sign In
+      </a>
+    </div>
+    <div class="explore-genres-head">
+      <span>GENRES</span>
+      <a href="anime.html">All genres</a>
+    </div>
+    <div class="explore-genres">
+      <a class="explore-genre" href="anime.html?genre=Action">Action</a>
+      <a class="explore-genre" href="anime.html?genre=Adventure">Adventure</a>
+      <a class="explore-genre" href="anime.html?genre=Comedy">Comedy</a>
+      <a class="explore-genre" href="anime.html?genre=Drama">Drama</a>
+      <a class="explore-genre" href="anime.html?genre=Fantasy">Fantasy</a>
+      <a class="explore-genre" href="anime.html?genre=Horror">Horror</a>
+      <a class="explore-genre" href="anime.html?genre=Mecha">Mecha</a>
+      <a class="explore-genre" href="anime.html?genre=Mystery">Mystery</a>
+      <a class="explore-genre" href="anime.html?genre=Romance">Romance</a>
+      <a class="explore-genre" href="anime.html?genre=Sci-Fi">Sci-Fi</a>
+      <a class="explore-genre" href="anime.html?genre=Sports">Sports</a>
+      <a class="explore-genre" href="anime.html?genre=Ecchi">Ecchi</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const list = [
+  {t:"Frieren: Beyond Journey's End",r:9.3,e:"⚔️",type:"TV",eps:"28 Eps",langs:["Hindi Sub"],genres:["Fantasy","Adventure"],status:"Completed",year:2023,pop:98},
+  {t:"Neon Horizon: Zero",r:9.1,e:"🌌",type:"TV",eps:"12 Eps",langs:["Hindi"],genres:["Sci-Fi","Action"],status:"Ongoing",year:2026,pop:92},
+  {t:"Cherry Blossom Letters",r:8.9,e:"💖",type:"TV",eps:"13 Eps",langs:["Hindi Sub"],genres:["Romance","Drama"],status:"Ongoing",year:2026,pop:88},
+  {t:"Crimson Guild Chronicles",r:9.2,e:"🗡️",type:"TV",eps:"24 Eps",langs:["Hindi Sub","FanDub"],genres:["Fantasy","Action","Shonen"],status:"Ongoing",year:2026,pop:95},
+  {t:"Jujutsu Kaisen S3",r:9.0,e:"🔥",type:"TV",eps:"24 Eps",langs:["Hindi Sub"],genres:["Action","Shonen"],status:"Ongoing",year:2026,pop:97},
+  {t:"Solo Leveling S2",r:8.7,e:"🌀",type:"TV",eps:"13 Eps",langs:["Hindi"],genres:["Action","Fantasy","Isekai"],status:"Ongoing",year:2026,pop:94},
+  {t:"One Punch Man S3",r:8.8,e:"⚡",type:"TV",eps:"12 Eps",langs:["Hindi Sub"],genres:["Action","Shonen"],status:"Completed",year:2025,pop:90},
+  {t:"Spy x Family S3",r:8.6,e:"🕵️",type:"TV",eps:"12 Eps",langs:["Hindi"],genres:["Action","Romance"],status:"Ongoing",year:2026,pop:89},
+  {t:"Demon Slayer S4",r:9.0,e:"🌟",type:"TV",eps:"11 Eps",langs:["FanDub"],genres:["Action","Shonen","Fantasy"],status:"Ongoing",year:2026,pop:96},
+  {t:"Attack on Titan",r:9.5,e:"⚔️",type:"TV",eps:"87 Eps",langs:["Hindi Sub"],genres:["Action","Fantasy"],status:"Completed",year:2013,pop:99},
+  {t:"Naruto Shippuden",r:9.3,e:"🍥",type:"TV",eps:"500 Eps",langs:["Hindi"],genres:["Action","Shonen"],status:"Completed",year:2007,pop:93},
+  {t:"Your Name",r:9.0,e:"🌠",type:"Movie",eps:"1 Film",langs:["Hindi Sub"],genres:["Romance","Fantasy"],status:"Completed",year:2016,pop:91},
+  {t:"Suzume",r:8.7,e:"🚪",type:"Movie",eps:"1 Film",langs:["Hindi"],genres:["Fantasy","Romance"],status:"Completed",year:2022,pop:85},
+  {t:"Chainsaw Man Movie",r:8.9,e:"⛓️",type:"Movie",eps:"1 Film",langs:["Hindi Sub","FanDub"],genres:["Action","Shonen"],status:"Completed",year:2025,pop:94},
+  {t:"Dragon Ball Z: Battle of Gods",r:8.5,e:"🐉",type:"Movie",eps:"1 Film",langs:["Hindi"],genres:["Action","Shonen"],status:"Completed",year:2013,pop:87},
+  {t:"One Piece",r:9.4,e:"🏴‍☠️",type:"TV",eps:"1000+ Eps",langs:["Hindi","FanDub"],genres:["Action","Shonen","Adventure"],status:"Ongoing",year:1999,pop:100},
+  {t:"Death Note",r:9.1,e:"📓",type:"TV",eps:"37 Eps",langs:["Hindi Sub"],genres:["Mystery","Shonen"],status:"Completed",year:2006,pop:92},
+  {t:"Re:Zero",r:8.8,e:"❄️",type:"TV",eps:"50 Eps",langs:["Hindi Sub"],genres:["Isekai","Fantasy","Drama"],status:"Ongoing",year:2021,pop:90},
+  {t:"Tokyo Ghoul",r:8.4,e:"🦊",type:"TV",eps:"48 Eps",langs:["Hindi Sub"],genres:["Horror","Action","Seinen"],status:"Completed",year:2014,pop:86},
+  {t:"Hunter x Hunter",r:9.2,e:"🎣",type:"TV",eps:"148 Eps",langs:["Hindi"],genres:["Action","Adventure","Shonen"],status:"Completed",year:2011,pop:95},
+  {t:"Fullmetal Alchemist",r:9.4,e:"⚗️",type:"TV",eps:"64 Eps",langs:["Hindi Sub"],genres:["Action","Adventure","Drama"],status:"Completed",year:2009,pop:97},
+  {t:"Steins;Gate",r:9.1,e:"🔬",type:"TV",eps:"24 Eps",langs:["Hindi Sub"],genres:["Sci-Fi","Thriller"],status:"Completed",year:2011,pop:91},
+  {t:"Code Geass",r:8.9,e:"👑",type:"TV",eps:"50 Eps",langs:["Hindi"],genres:["Mecha","Drama","Action"],status:"Completed",year:2006,pop:88},
+  {t:"Mob Psycho 100",r:8.8,e:"👻",type:"TV",eps:"37 Eps",langs:["Hindi Sub"],genres:["Action","Comedy","Shonen"],status:"Completed",year:2016,pop:87},
+  {t:"Haikyuu!!",r:8.9,e:"🏐",type:"TV",eps:"85 Eps",langs:["Hindi"],genres:["Sports","Comedy","Shonen"],status:"Completed",year:2014,pop:90},
+  {t:"Vinland Saga",r:9.0,e:"⚔️",type:"TV",eps:"48 Eps",langs:["Hindi Sub"],genres:["Action","Adventure","Seinen"],status:"Completed",year:2019,pop:92},
+  {t:"The Promised Neverland",r:8.5,e:"🏡",type:"TV",eps:"23 Eps",langs:["Hindi Sub"],genres:["Horror","Mystery","Thriller"],status:"Completed",year:2019,pop:84},
+  {t:"Black Clover",r:8.3,e:"🃏",type:"TV",eps:"170 Eps",langs:["Hindi","FanDub"],genres:["Action","Fantasy","Shonen"],status:"Completed",year:2017,pop:85},
+  {t:"My Hero Academia",r:8.6,e:"💥",type:"TV",eps:"138 Eps",langs:["Hindi"],genres:["Action","Shonen"],status:"Ongoing",year:2016,pop:89},
+  {t:"Bleach: TYBW",r:9.0,e:"🗡️",type:"TV",eps:"40 Eps",langs:["Hindi Sub","FanDub"],genres:["Action","Shonen"],status:"Ongoing",year:2022,pop:93},
+  {t:"Chainsaw Man",r:8.7,e:"🪚",type:"TV",eps:"12 Eps",langs:["Hindi Sub"],genres:["Action","Horror","Shonen"],status:"Completed",year:2022,pop:91},
+  {t:"Oshi no Ko",r:8.6,e:"🌟",type:"TV",eps:"24 Eps",langs:["Hindi Sub"],genres:["Drama","Mystery"],status:"Ongoing",year:2023,pop:88},
+  {t:"Frieren Movie",r:8.8,e:"🎬",type:"Movie",eps:"1 Film",langs:["Hindi Sub"],genres:["Fantasy","Adventure"],status:"Completed",year:2025,pop:86},
+  {t:"Jujutsu Kaisen 0",r:8.7,e:"🎬",type:"Movie",eps:"1 Film",langs:["Hindi"],genres:["Action","Fantasy"],status:"Completed",year:2021,pop:90},
+  {t:"A Silent Voice",r:9.0,e:"🔇",type:"Movie",eps:"1 Film",langs:["Hindi Sub"],genres:["Drama","Romance"],status:"Completed",year:2016,pop:92},
+  {t:"Weathering With You",r:8.5,e:"🌧️",type:"Movie",eps:"1 Film",langs:["Hindi"],genres:["Romance","Fantasy"],status:"Completed",year:2019,pop:84},
+  {t:"Demon Slayer: Mugen Train",r:8.9,e:"🚂",type:"Movie",eps:"1 Film",langs:["Hindi Sub","FanDub"],genres:["Action","Fantasy"],status:"Completed",year:2020,pop:94},
+  {t:"Blue Lock",r:8.4,e:"⚽",type:"TV",eps:"24 Eps",langs:["Hindi"],genres:["Sports","Shonen"],status:"Ongoing",year:2022,pop:87},
+  {t:"Kaiju No. 8",r:8.5,e:"🦖",type:"TV",eps:"12 Eps",langs:["Hindi Sub"],genres:["Action","Sci-Fi","Shonen"],status:"Ongoing",year:2024,pop:89},
+  {t:"Dungeon Meshi",r:8.6,e:"🍲",type:"TV",eps:"24 Eps",langs:["Hindi Sub"],genres:["Adventure","Comedy","Fantasy"],status:"Completed",year:2024,pop:86},
+  {t:"Mashle",r:8.2,e:"💪",type:"TV",eps:"24 Eps",langs:["FanDub"],genres:["Action","Comedy","Fantasy"],status:"Completed",year:2023,pop:82},
+  {t:"Hell's Paradise",r:8.3,e:"🏝️",type:"TV",eps:"13 Eps",langs:["Hindi Sub"],genres:["Action","Adventure","Seinen"],status:"Completed",year:2023,pop:83},
+  {t:"Zom 100",r:8.1,e:"🧟",type:"TV",eps:"12 Eps",langs:["Hindi"],genres:["Comedy","Horror","Action"],status:"Completed",year:2023,pop:80},
+  {t:"Bocchi the Rock!",r:8.7,e:"🎸",type:"TV",eps:"12 Eps",langs:["Hindi Sub"],genres:["Comedy","Slice of Life"],status:"Completed",year:2022,pop:88},
+  {t:"Spy Classroom",r:7.9,e:"🕵️",type:"TV",eps:"24 Eps",langs:["Hindi Sub"],genres:["Action","Comedy"],status:"Completed",year:2023,pop:76},
+  {t:"Undead Unluck",r:8.0,e:"💀",type:"TV",eps:"24 Eps",langs:["FanDub"],genres:["Action","Comedy","Shonen"],status:"Completed",year:2023,pop:78},
+  {t:"Frieren Specials",r:8.4,e:"✨",type:"TV",eps:"2 Eps",langs:["Hindi Sub"],genres:["Fantasy"],status:"Completed",year:2024,pop:81},
+];
+
+function langLabel(langs){
+  if(!langs||!langs.length) return {text:'', cls:''};
+  if(langs.length>=2) return {text:'Dual', cls:'lang-dual'};
+  const l=langs[0];
+  if(l==='Hindi') return {text:'Hindi', cls:'lang-hindi'};
+  if(l==='Hindi Sub') return {text:'Hindi Sub', cls:'lang-hsub'};
+  if(l==='FanDub') return {text:'FanDub', cls:'lang-fandub'};
+  return {text:l, cls:'lang-dual'};
+}
+
+let lang='all', genre='all', page=1, searchQ='';
+const PER=36;
+const params=new URLSearchParams(location.search);
+if(params.get('q')) searchQ=params.get('q');
+
+function getFiltered(){
+  const type=document.getElementById('typeSelect').value;
+  const status=document.getElementById('statusSelect').value;
+  const year=document.getElementById('yearSelect').value;
+  const sort=document.getElementById('sortSelect').value;
+  let arr=list.slice();
+  const q=searchQ.toLowerCase().trim();
+  if(q) arr=arr.filter(x=>x.t.toLowerCase().includes(q)||(x.genres||[]).some(g=>g.toLowerCase().includes(q)));
+  if(lang!=='all') arr=arr.filter(x=>(x.langs||[]).includes(lang));
+  if(genre!=='all') arr=arr.filter(x=>(x.genres||[]).includes(genre));
+  if(type!=='all') arr=arr.filter(x=>x.type===type);
+  if(status!=='all') arr=arr.filter(x=>x.status===status);
+  if(year==='2026'||year==='2025'||year==='2023') arr=arr.filter(x=>String(x.year)===year);
+  else if(year==='older') arr=arr.filter(x=>x.year<=2022);
+  if(sort==='popular') arr.sort((a,b)=>b.pop-a.pop);
+  else if(sort==='rating') arr.sort((a,b)=>b.r-a.r);
+  else if(sort==='title') arr.sort((a,b)=>a.t.localeCompare(b.t));
+  else if(sort==='new') arr.sort((a,b)=>b.year-a.year);
+  return arr;
+}
+
+function render(){
+  const arr=getFiltered();
+  const pages=Math.max(1,Math.ceil(arr.length/PER));
+  if(page>pages) page=pages;
+  const slice=arr.slice((page-1)*PER, page*PER);
+  document.getElementById('totalCount').textContent=list.length;
+  document.getElementById('resultsMeta').textContent=
+    arr.length? `${arr.length} shown · Page ${page}/${pages}` : 'No anime found';
+  const grid=document.getElementById('grid');
+  if(!slice.length){
+    grid.innerHTML='<div class="empty"><h3>No Anime Found</h3><p>Search ya filters change karke try karo.</p></div>';
+    document.getElementById('pager').innerHTML='';
+    return;
+  }
+  grid.innerHTML=slice.map(a=>{
+    const L=langLabel(a.langs);
+    return `<a class="anime-card" href="anime-detail.html">
+      <div class="card-poster">
+        <span class="rating-badge">★ ${a.r.toFixed(1)}</span>
+        ${a.e}
+        ${L.text?`<span class="card-lang ${L.cls}">${L.text}</span>`:''}
+        <div class="card-overlay"><div class="card-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+      </div>
+      <div class="card-body">
+        <h3>${a.t}</h3>
+        <div class="card-meta">${a.type} · ${a.eps}</div>
+      </div>
+    </a>`;
+  }).join('');
+  const pager=document.getElementById('pager');
+  if(pages<=1){ pager.innerHTML=''; return; }
+  let h=`<button class="page-btn" ${page===1?'disabled':''} data-p="${page-1}">‹</button>`;
+  for(let i=1;i<=pages;i++) h+=`<button class="page-btn ${i===page?'active':''}" data-p="${i}">${i}</button>`;
+  h+=`<button class="page-btn" ${page===pages?'disabled':''} data-p="${page+1}">›</button>`;
+  pager.innerHTML=h;
+  pager.querySelectorAll('.page-btn').forEach(b=>{
+    b.onclick=()=>{const p=+b.dataset.p;if(p>=1&&p<=pages){page=p;render();
+// navbar scroll like aniflix
+(function(){
+  const nav=document.querySelector('.navbar');
+  if(!nav) return;
+  const onScroll=()=>{ nav.classList.toggle('scrolled', window.scrollY>40); };
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();window.scrollTo({top:0,behavior:'smooth'});}};
+  });
+}
+
+function bindChips(sel, key){
+  document.querySelectorAll(sel).forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll(sel).forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      if(key==='lang') lang=btn.dataset.lang;
+      else genre=btn.dataset.genre;
+      page=1; render();
+// navbar scroll like aniflix
+(function(){
+  const nav=document.querySelector('.navbar');
+  if(!nav) return;
+  const onScroll=()=>{ nav.classList.toggle('scrolled', window.scrollY>40); };
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+    });
+  });
+}
+bindChips('#langChips .chip','lang');
+bindChips('#genreChips .chip','genre');
+['typeSelect','statusSelect','yearSelect','sortSelect'].forEach(id=>{
+  document.getElementById(id).addEventListener('change',()=>{page=1;render();
+// navbar scroll like aniflix
+(function(){
+  const nav=document.querySelector('.navbar');
+  if(!nav) return;
+  const onScroll=()=>{ nav.classList.toggle('scrolled', window.scrollY>40); };
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();});
+});
+
+// Filters toggle — next to search in navbar
+const ft=document.getElementById('filtersToggle');
+const panel=document.getElementById('filterPanel');
+ft.addEventListener('click',()=>{
+  const open=panel.hidden;
+  panel.hidden=!open;
+  ft.classList.toggle('open', open);
+});
+
+// Inline search on same page
+const pageSearch=document.getElementById('pageSearch');
+if(searchQ && pageSearch) pageSearch.value=searchQ;
+if(pageSearch){
+  pageSearch.addEventListener('input', ()=>{
+    searchQ=pageSearch.value;
+    page=1;
+    render();
+// navbar scroll like aniflix
+(function(){
+  const nav=document.querySelector('.navbar');
+  if(!nav) return;
+  const onScroll=()=>{ nav.classList.toggle('scrolled', window.scrollY>40); };
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+  });
+}
+// Navbar search icon focuses the page search
+const navSearch=document.getElementById('searchToggle');
+if(navSearch && pageSearch){
+  navSearch.addEventListener('click', ()=>{
+    pageSearch.focus();
+    pageSearch.scrollIntoView({behavior:'smooth', block:'center'});
+  });
+}
+
+document.addEventListener('touchstart',e=>{const c=e.target.closest('.anime-card');if(c)c.classList.add('show-play');},{passive:true});
+document.addEventListener('touchend',()=>{setTimeout(()=>document.querySelectorAll('.show-play').forEach(c=>c.classList.remove('show-play')),400);},{passive:true});
+
+render();
+// navbar scroll like aniflix
+(function(){
+  const nav=document.querySelector('.navbar');
+  if(!nav) return;
+  const onScroll=()=>{ nav.classList.toggle('scrolled', window.scrollY>40); };
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+if(params.get('q') && pageSearch){ pageSearch.value=params.get('q'); searchQ=params.get('q'); }
+</script>
+<script>
+// Aniflix-style search overlay
+        (function(){
+          const toggle = document.getElementById('searchToggle');
+          const overlay = document.getElementById('searchOverlay');
+          const input = document.getElementById('searchInput');
+          const results = document.getElementById('searchResults');
+                    if (!toggle || !overlay || !input) return;
+          const catalog = [
+            {t:"Frieren: Beyond Journey's End",e:'⚔️',m:'TV · HSub · ★ 9.4'},
+            {t:'Neon Horizon: Zero',e:'🌌',m:'TV · Hindi · ★ 9.1'},
+            {t:'Cherry Blossom Letters',e:'💖',m:'TV · HSub · ★ 8.9'},
+            {t:'Crimson Guild Chronicles',e:'🗡️',m:'TV · FanDub · ★ 9.2'},
+            {t:'Jujutsu Kaisen S3',e:'🔥',m:'TV · HSub · ★ 9.0'},
+            {t:'Solo Leveling S2',e:'🌀',m:'TV · Hindi · ★ 8.7'},
+            {t:'One Punch Man S3',e:'⚡',m:'TV · HSub · ★ 8.8'},
+            {t:'Spy x Family S3',e:'🕵️',m:'TV · Hindi · ★ 8.6'},
+            {t:'Frieren',e:'🏰',m:'TV · HSub · ★ 9.3'},
+            {t:'Demon Slayer S4',e:'🌟',m:'TV · FanDub · ★ 9.0'},
+            {t:'Attack on Titan',e:'⚔️',m:'TV · HSub · ★ 9.5'},
+            {t:'Naruto Shippuden',e:'🍥',m:'TV · Hindi · ★ 9.3'}
+          ];
+          const recentEl = document.getElementById('searchRecent');
+          const RECENT_KEY = 'af_recent_searches';
+          function getRecent(){
+            try { return JSON.parse(localStorage.getItem(RECENT_KEY)||'[]'); } catch(e){ return []; }
+          }
+          function saveRecent(q){
+            q = (q||'').trim();
+            if (!q || q.length < 1) return;
+            let list = getRecent().filter(x => x.toLowerCase() !== q.toLowerCase());
+            list.unshift(q);
+            list = list.slice(0, 8);
+            localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+          }
+          function clearRecent(){
+            localStorage.removeItem(RECENT_KEY);
+            renderRecent();
+          }
+          function renderRecent(){
+            const list = getRecent();
+            if (!list.length) {
+              recentEl.classList.remove('show');
+              recentEl.innerHTML = '';
+              return;
+            }
+            recentEl.classList.add('show');
+            recentEl.innerHTML = `
+              <div class="search-recent-title">
+                <span>Recent searches</span>
+                <button type="button" id="clearRecentBtn">Clear</button>
+              </div>
+              <div class="search-recent-chips">
+                ${list.map(q => `
+                  <button type="button" class="search-chip" data-q="${q.replace(/"/g,'&quot;')}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    ${q}
+                  </button>
+                `).join('')}
+              </div>`;
+            recentEl.querySelector('#clearRecentBtn')?.addEventListener('click', clearRecent);
+            recentEl.querySelectorAll('.search-chip').forEach(btn => {
+              btn.addEventListener('click', () => {
+                input.value = btn.dataset.q || '';
+                render(input.value);
+                input.focus();
+              });
+            });
+          }
+          function openSearch(){
+            if (!overlay.classList.contains('open')) {
+              history.pushState({ afSearch: true }, '');
+            }
+            overlay.classList.add('open');
+            document.body.style.overflow='hidden';
+            setTimeout(()=>{ input.focus(); }, 180);
+            render(input.value||'');
+          }
+          function closeSearch(fromPop){
+            if (!overlay.classList.contains('open')) return;
+            if (input.value.trim()) saveRecent(input.value);
+            overlay.classList.remove('open');
+            document.body.style.overflow='';
+            setTimeout(()=>{ input.value=''; results.innerHTML=''; recentEl.classList.remove('show'); }, 280);
+            if (!fromPop && history.state && history.state.afSearch) {
+              history.back();
+            }
+          }
+          function render(q){
+            q = (q||'').toLowerCase().trim();
+            if (!q) {
+              renderRecent();
+              results.innerHTML = '';
+              return;
+            }
+            recentEl.classList.remove('show');
+            const hits = catalog.filter(x => x.t.toLowerCase().includes(q));
+            if (!hits.length) {
+              results.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem;">No results found</p>';
+              return;
+            }
+            results.innerHTML = hits.map((h,i) => `
+              <a class="search-hit" href="anime-detail.html" style="animation-delay:${i*0.04}s">
+                <div class="search-hit-thumb">${h.e}</div>
+                <div class="search-hit-info"><strong>${h.t}</strong><span>${h.m}</span></div>
+              </a>`).join('');
+          }
+          toggle.addEventListener('click', openSearch);
+          overlay.addEventListener('click', e => { if (e.target === overlay || e.target.classList.contains('search-overlay-panel') && e.target === e.currentTarget) closeSearch(); });
+          overlay.addEventListener('click', e => { if (e.target === overlay) closeSearch(); });
+          input.addEventListener('input', () => render(input.value));
+          results.addEventListener('click', () => {
+            if (input.value.trim()) saveRecent(input.value);
+          });
+          input.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && input.value.trim()) {
+              saveRecent(input.value);
+              render(input.value);
+            }
+          });
+          document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
+          window.addEventListener('popstate', () => {
+            if (overlay.classList.contains('open')) closeSearch(true);
+          });
+        })();
+</script>
+<script>
+(function(){
+  function getUser(){
+    try { return JSON.parse(localStorage.getItem('animefan_user')||'null'); } catch(e){ return null; }
+  }
+  function setUser(u){
+    if (u) localStorage.setItem('animefan_user', JSON.stringify(u));
+    else localStorage.removeItem('animefan_user');
+  }
+  const btn = document.getElementById('profileBtn');
+  const dd = document.getElementById('profileDd');
+  if (!btn || !dd) return;
+  function refreshProfile(){
+    const u = getUser();
+    const label = document.getElementById('pdLabel');
+    const sub = document.getElementById('pdSub');
+    const signIn = document.getElementById('pdSignIn');
+    const logout = document.getElementById('pdLogout');
+    const hist = document.getElementById('pdHistory');
+    const list = document.getElementById('pdList');
+    if (u) {
+      if (label) label.textContent = 'MEMBER';
+      if (sub) sub.textContent = u.name || u.email || 'Signed in';
+      if (signIn) signIn.style.display = 'none';
+      if (logout) logout.style.display = 'flex';
+      if (hist) hist.href = 'continue.html';
+      if (list) list.href = 'mylist.html';
+    } else {
+      if (label) label.textContent = 'GUEST';
+      if (sub) sub.textContent = 'Not signed in';
+      if (signIn) signIn.style.display = 'flex';
+      if (logout) logout.style.display = 'none';
+      if (hist) hist.href = 'login.html?next=continue.html';
+      if (list) list.href = 'login.html?next=mylist.html';
+    }
+  }
+  refreshProfile();
+  btn.addEventListener('click', function(e){
+    e.preventDefault(); e.stopPropagation();
+    dd.classList.toggle('open');
+  });
+  document.addEventListener('click', function(e){
+    if (!dd.contains(e.target) && !btn.contains(e.target)) dd.classList.remove('open');
+  });
+  document.getElementById('pdLogout')?.addEventListener('click', function(){
+    setUser(null); refreshProfile(); dd.classList.remove('open');
+  });
+})();
+</script>
+
+
+<script>
+/* index.html chrome — navbar / side menu / explore / bottom active */
+(function(){
+  const nav = document.querySelector('.navbar');
+  if (!nav) return;
+  let lastY = window.scrollY || 0, ticking = false;
+  function onScroll(){
+    const y = window.scrollY || 0;
+    if (y > 40) nav.classList.add('scrolled'); else nav.classList.remove('scrolled');
+    if (y < 50) nav.classList.remove('nav-hidden');
+    else if (y > lastY + 4) nav.classList.add('nav-hidden');
+    else if (y < lastY - 4) nav.classList.remove('nav-hidden');
+    lastY = y; ticking = false;
+  }
+  window.addEventListener('scroll', function(){
+    if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+  }, {passive:true});
+  onScroll();
+})();
+(function(){
+  const sideMenu = document.getElementById('sideMenu');
+  const overlay = document.getElementById('sideOverlay');
+  const menuBtn = document.getElementById('menuBtn');
+  function closeMenu(){
+    if (sideMenu) sideMenu.classList.remove('open');
+    if (overlay) overlay.classList.remove('open');
+    if (menuBtn) menuBtn.classList.remove('open');
+    document.body.classList.remove('menu-open');
+    document.body.style.overflow = '';
+  }
+  function openMenu(){
+    if (sideMenu) sideMenu.classList.add('open');
+    if (overlay) overlay.classList.add('open');
+    if (menuBtn) menuBtn.classList.add('open');
+    document.body.classList.add('menu-open');
+    document.body.style.overflow = 'hidden';
+  }
+  window.__toggleSideMenu = function(e){ if(e){e.preventDefault();e.stopPropagation();} sideMenu&&sideMenu.classList.contains('open')?closeMenu():openMenu(); };
+  window.__closeSideMenu = closeMenu;
+  if (menuBtn) menuBtn.onclick = window.__toggleSideMenu;
+  if (overlay) overlay.addEventListener('click', closeMenu);
+  if (sideMenu) sideMenu.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeMenu(); });
+})();
+(function(){
+  const sheet = document.getElementById('exploreSheet');
+  const overlay = document.getElementById('exploreOverlay');
+  if (!sheet) return;
+  function openExplore(){ sheet.classList.add('open'); if(overlay) overlay.classList.add('open'); document.body.classList.add('menu-open'); }
+  function closeExplore(){ sheet.classList.remove('open'); if(overlay) overlay.classList.remove('open'); document.body.classList.remove('menu-open'); }
+  window.__openExplore = openExplore;
+  window.__closeExplore = closeExplore;
+  window.__toggleExplore = function(e){ if(e){e.preventDefault();e.stopPropagation();} sheet.classList.contains('open')?closeExplore():openExplore(); };
+  if (overlay) overlay.addEventListener('click', closeExplore);
+})();
+(function(){
+  var path = (location.pathname||'').split('/').pop()||'';
+  var key = 'browse';
+  if (/schedule/i.test(path)) key = 'schedule';
+  else if (/index|^$/i.test(path)) key = 'home';
+  else if (/mylist|continue/i.test(path)) key = 'list';
+  document.querySelectorAll('#bottomNav [data-bn]').forEach(function(el){
+    el.classList.toggle('active', el.getAttribute('data-bn') === key);
+  });
+})();
+</script>
+
+</body>
+</html>
